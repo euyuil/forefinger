@@ -1,5 +1,8 @@
 package com.euyuil.forefinger.meta;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
 /**
  * The schema of the table.
  * It's size should be really small.
@@ -10,14 +13,33 @@ package com.euyuil.forefinger.meta;
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
+@XStreamAlias("schema")
 public class TableSchema implements DataSchema {
+
+    @XStreamImplicit(itemFieldName = "column")
+    private TableColumn[] columns;
+
+    @XStreamImplicit(itemFieldName = "index")
+    private TableIndex[] indices;
 
     @Override
     public DataColumn[] getDataColumns() {
-        return new DataColumn[0];
+        return columns;
     }
 
     public TableColumn[] getTableColumns() {
-        return (TableColumn[]) getDataColumns();
+        return columns;
+    }
+
+    public void setTableColumns(TableColumn[] tableColumns) {
+        this.columns = tableColumns;
+    }
+
+    public TableIndex[] getTableIndices() {
+        return indices;
+    }
+
+    public void setTableIndices(TableIndex[] tableIndices) {
+        this.indices = tableIndices;
     }
 }
