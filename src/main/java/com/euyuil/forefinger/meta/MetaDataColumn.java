@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.converters.SingleValueConverter;
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
-public abstract class DataColumn {
+public abstract class MetaDataColumn {
 
     @XStreamAsAttribute
     private String name;
@@ -18,10 +18,10 @@ public abstract class DataColumn {
     @XStreamConverter(TypeConverter.class)
     private Class type;
 
-    public DataColumn() {
+    public MetaDataColumn() {
     }
 
-    public DataColumn(String name, Class type) {
+    public MetaDataColumn(String name, Class type) {
         this.name = name;
         this.type = type;
     }
@@ -42,7 +42,7 @@ public abstract class DataColumn {
         return new EqualCondition(this, value);
     }
 
-    public EqualCondition isEqualTo(DataColumn column) {
+    public EqualCondition isEqualTo(MetaDataColumn column) {
         return new EqualCondition(this, column);
     }
 

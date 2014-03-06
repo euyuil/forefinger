@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.query;
 
-import com.euyuil.forefinger.meta.DataColumn;
+import com.euyuil.forefinger.meta.MetaDataColumn;
 
 /**
  * @author Liu Yue
@@ -12,15 +12,15 @@ public class EqualCondition implements Condition {
 
     }
 
-    public EqualCondition(DataColumn a, Object b) {
+    public EqualCondition(MetaDataColumn a, Object b) {
 
     }
 
-    public EqualCondition(Object a, DataColumn b) {
+    public EqualCondition(Object a, MetaDataColumn b) {
 
     }
 
-    public EqualCondition(DataColumn a, DataColumn b) {
+    public EqualCondition(MetaDataColumn a, MetaDataColumn b) {
 
     }
 }

@@ -14,7 +14,7 @@ import com.thoughtworks.xstream.converters.SingleValueConverter;
  * @version 0.0.2014.03.05
  */
 @XStreamAlias("index")
-public class TableIndex {
+public class MetaTableIndex {
 
     @XStreamAsAttribute
     @XStreamConverter(TypeConverter.class)
@@ -23,25 +23,25 @@ public class TableIndex {
     @XStreamImplicit(itemFieldName = "column")
     private Column[] columns;
 
-    public TableIndex() {
+    public MetaTableIndex() {
     }
 
-    public TableIndex(Type type, Column column) {
+    public MetaTableIndex(Type type, Column column) {
         this.type = type;
         this.columns = new Column[] { column };
     }
 
-    public TableIndex(Type type, String column) {
+    public MetaTableIndex(Type type, String column) {
         this.type = type;
         this.columns = new Column[] { new Column(column) };
     }
 
-    public TableIndex(Type type, Column[] columns) {
+    public MetaTableIndex(Type type, Column[] columns) {
         this.type = type;
         this.columns = columns;
     }
 
-    public TableIndex(Type type, String[] columns) {
+    public MetaTableIndex(Type type, String[] columns) {
         this.type = type;
         this.columns = new Column[columns.length];
         for (int i = 0; i < columns.length; ++i)

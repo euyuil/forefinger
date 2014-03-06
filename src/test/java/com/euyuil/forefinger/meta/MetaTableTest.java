@@ -9,7 +9,7 @@ import org.junit.Test;
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
-public class TableTest {
+public class MetaTableTest {
 
     @Before
     public void setUp() throws Exception {
@@ -24,7 +24,7 @@ public class TableTest {
     @Test
     public void testSerializeAndDeserialize() {
 
-        Table table = new Table();
+        MetaTable table = new MetaTable();
 
         table.setName("user");
 
@@ -33,29 +33,25 @@ public class TableTest {
                 "/opt/forefinger/user-001.txt",
         });
 
-        TableSchema schema = new TableSchema();
-
-        schema.setTableColumns(new TableColumn[] {
-                new TableColumn("id", Long.class),
-                new TableColumn("name", String.class),
-                new TableColumn("age", Double.class),
-                new TableColumn("description", String.class),
+        table.setTableColumns(new MetaTableColumn[]{
+                new MetaTableColumn("id", Long.class),
+                new MetaTableColumn("name", String.class),
+                new MetaTableColumn("age", Double.class),
+                new MetaTableColumn("description", String.class),
         });
 
-        schema.setTableIndices(new TableIndex[] {
-                new TableIndex(TableIndex.Type.PRIMARY, "id"),
-                new TableIndex(TableIndex.Type.UNIQUE, "name"),
-                new TableIndex(TableIndex.Type.INDEX, "age"),
-                new TableIndex(TableIndex.Type.FULLTEXT, "description"),
+        table.setTableIndices(new MetaTableIndex[]{
+                new MetaTableIndex(MetaTableIndex.Type.PRIMARY, "id"),
+                new MetaTableIndex(MetaTableIndex.Type.UNIQUE, "name"),
+                new MetaTableIndex(MetaTableIndex.Type.INDEX, "age"),
+                new MetaTableIndex(MetaTableIndex.Type.FULLTEXT, "description"),
         });
-
-        table.setSchema(schema);
 
         XStream xStream = new XStream();
         xStream.autodetectAnnotations(true);
 
         String xmlText = xStream.toXML(table);
-        Table sameTable = (Table) xStream.fromXML(xmlText);
+        MetaTable sameTable = (MetaTable) xStream.fromXML(xmlText);
         String sameXmlText = xStream.toXML(sameTable);
 
         assert xmlText.trim().length() > 0;

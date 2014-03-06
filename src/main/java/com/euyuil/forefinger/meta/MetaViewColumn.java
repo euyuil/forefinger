@@ -7,12 +7,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @version 0.0.2014.03.05
  */
 @XStreamAlias("column")
-public class ViewColumn extends DataColumn {
+public class MetaViewColumn extends MetaDataColumn {
 
-    public ViewColumn() {
+    public MetaViewColumn() {
     }
 
-    public ViewColumn(String name, Class type) {
+    public MetaViewColumn(String name, Class type) {
         super(name, type);
     }
 }
