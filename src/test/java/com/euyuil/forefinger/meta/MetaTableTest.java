@@ -1,6 +1,5 @@
 package com.euyuil.forefinger.meta;
 
-import com.thoughtworks.xstream.XStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,15 +46,12 @@ public class MetaTableTest {
                 new MetaTableIndex(MetaTableIndex.Type.FULLTEXT, "description"),
         });
 
-        XStream xStream = new XStream();
-        xStream.autodetectAnnotations(true);
+        String xml = MetaTable.toXml(table);
+        MetaTable sameTable = MetaTable.fromXml(xml);
+        String sameXml = MetaTable.toXml(sameTable);
 
-        String xmlText = xStream.toXML(table);
-        MetaTable sameTable = (MetaTable) xStream.fromXML(xmlText);
-        String sameXmlText = xStream.toXML(sameTable);
-
-        assert xmlText.trim().length() > 0;
-        assert xmlText.equals(sameXmlText);
+        assert xml.trim().length() > 0;
+        assert xml.equals(sameXml);
     }
 
     @Test

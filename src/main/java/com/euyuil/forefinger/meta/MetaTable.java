@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.meta;
 
+import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -14,6 +15,26 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("table")
 public class MetaTable extends MetaData {
+
+    static final XStream xmlSerDe = new XStream();
+
+    static {
+        xmlSerDe.processAnnotations(new Class[]{
+                MetaData.class,
+                MetaDataColumn.class,
+                MetaTable.class,
+                MetaTableColumn.class,
+                MetaTableIndex.class,
+        });
+    }
+
+    public static MetaTable fromXml(String xml) {
+        return (MetaTable) xmlSerDe.fromXML(xml);
+    }
+
+    public static String toXml(MetaTable table) {
+        return xmlSerDe.toXML(table);
+    }
 
     @XStreamImplicit(itemFieldName = "column")
     private MetaTableColumn[] columns;
