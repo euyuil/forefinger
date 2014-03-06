@@ -1,9 +1,6 @@
 package com.euyuil.forefinger.meta;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.annotations.*;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
 
 /**
@@ -24,19 +21,31 @@ public class TableIndex {
     private Type type;
 
     @XStreamImplicit(itemFieldName = "column")
-    private String[] columns;
+    private Column[] columns;
 
     public TableIndex() {
     }
 
+    public TableIndex(Type type, Column column) {
+        this.type = type;
+        this.columns = new Column[] { column };
+    }
+
     public TableIndex(Type type, String column) {
         this.type = type;
-        this.columns = new String[] { column };
+        this.columns = new Column[] { new Column(column) };
+    }
+
+    public TableIndex(Type type, Column[] columns) {
+        this.type = type;
+        this.columns = columns;
     }
 
     public TableIndex(Type type, String[] columns) {
         this.type = type;
-        this.columns = columns;
+        this.columns = new Column[columns.length];
+        for (int i = 0; i < columns.length; ++i)
+            this.columns[i] = new Column(columns[i]);
     }
 
     public Type getType() {
@@ -47,16 +56,59 @@ public class TableIndex {
         this.type = type;
     }
 
-    public String[] getColumns() {
+    public Column[] getColumns() {
         return columns;
     }
 
-    public void setColumns(String[] columns) {
+    public void setColumns(Column[] columns) {
         this.columns = columns;
     }
 
     public static enum Type {
         PRIMARY, UNIQUE, INDEX, FULLTEXT
+    }
+
+    @XStreamAlias("column")
+    public static class Column {
+
+        @XStreamOmitField
+        public final int DEFAULT_SIZE = 256;
+
+        @XStreamAsAttribute
+        private String name;
+
+        @XStreamAsAttribute
+        private int size;
+
+        public Column() {
+            this.size = DEFAULT_SIZE;
+        }
+
+        public Column(String name) {
+            this.name = name;
+            this.size = DEFAULT_SIZE;
+        }
+
+        public Column(String name, int size) {
+            this.name = name;
+            this.size = size;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
     }
 
     public static class TypeConverter implements SingleValueConverter {

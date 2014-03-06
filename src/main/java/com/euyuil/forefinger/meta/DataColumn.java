@@ -1,8 +1,9 @@
 package com.euyuil.forefinger.meta;
 
 import com.euyuil.forefinger.query.EqualCondition;
-
-import java.lang.reflect.Type;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamConverter;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
 
 /**
  * @author Liu Yue
@@ -10,9 +11,32 @@ import java.lang.reflect.Type;
  */
 public abstract class DataColumn {
 
-    public abstract String getName();
+    @XStreamAsAttribute
+    private String name;
 
-    public abstract Type getType();
+    @XStreamAsAttribute
+    @XStreamConverter(TypeConverter.class)
+    private Class type;
+
+    public DataColumn() {
+    }
+
+    public DataColumn(String name, Class type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Class getType() {
+        return type;
+    }
 
     public EqualCondition isEqualTo(Object value) {
         return new EqualCondition(this, value);
@@ -20,5 +44,36 @@ public abstract class DataColumn {
 
     public EqualCondition isEqualTo(DataColumn column) {
         return new EqualCondition(this, column);
+    }
+
+    public void setType(Class type) {
+        this.type = type;
+    }
+
+    public static class TypeConverter implements SingleValueConverter {
+
+        @Override
+        public String toString(Object o) {
+            Class clazz = (Class) o;
+            return clazz.getSimpleName();
+        }
+
+        @Override
+        public Object fromString(String s) {
+            String typeName = s.substring(0, 1).toUpperCase() +
+                    s.substring(1).toLowerCase();
+            String typeFullName = String.format("java.lang.%s", typeName);
+            try {
+                return Class.forName(typeFullName);
+            } catch (ClassNotFoundException e) {
+                // TODO Error reporting.
+                return null;
+            }
+        }
+
+        @Override
+        public boolean canConvert(Class clazz) {
+            return (clazz.equals(Class.class));
+        }
     }
 }
