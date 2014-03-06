@@ -1,6 +1,11 @@
 package com.euyuil.forefinger.meta;
 
+import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * @author Liu Yue
@@ -23,4 +28,18 @@ public abstract class MetaData {
     }
 
     public abstract MetaDataColumn[] getDataColumns();
+
+    protected abstract XStream getXmlSerDe();
+
+    public String toXml() {
+        return getXmlSerDe().toXML(this);
+    }
+
+    public void toXmlFile(File file)
+            throws IOException {
+        FileOutputStream outputStream = new FileOutputStream(file);
+        getXmlSerDe().toXML(this, outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
 }

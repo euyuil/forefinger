@@ -8,7 +8,7 @@ import org.junit.Test;
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
-public class MetaTableTest {
+public class TableMetaDataTest {
 
     @Before
     public void setUp() throws Exception {
@@ -23,7 +23,7 @@ public class MetaTableTest {
     @Test
     public void testSerializeAndDeserialize() {
 
-        MetaTable table = new MetaTable();
+        TableMetaData table = new TableMetaData();
 
         table.setName("user");
 
@@ -32,23 +32,23 @@ public class MetaTableTest {
                 "/opt/forefinger/user-001.txt",
         });
 
-        table.setTableColumns(new MetaTableColumn[]{
-                new MetaTableColumn("id", Long.class),
-                new MetaTableColumn("name", String.class),
-                new MetaTableColumn("age", Double.class),
-                new MetaTableColumn("description", String.class),
+        table.setTableColumns(new TableMetaDataColumn[]{
+                new TableMetaDataColumn("id", Long.class),
+                new TableMetaDataColumn("name", String.class),
+                new TableMetaDataColumn("age", Double.class),
+                new TableMetaDataColumn("description", String.class),
         });
 
-        table.setTableIndices(new MetaTableIndex[]{
-                new MetaTableIndex(MetaTableIndex.Type.PRIMARY, "id"),
-                new MetaTableIndex(MetaTableIndex.Type.UNIQUE, "name"),
-                new MetaTableIndex(MetaTableIndex.Type.INDEX, "age"),
-                new MetaTableIndex(MetaTableIndex.Type.FULLTEXT, "description"),
+        table.setTableIndices(new TableMetaDataIndex[]{
+                new TableMetaDataIndex(TableMetaDataIndex.Type.PRIMARY, "id"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.UNIQUE, "name"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.INDEX, "age"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.FULLTEXT, "description"),
         });
 
-        String xml = MetaTable.toXml(table);
-        MetaTable sameTable = MetaTable.fromXml(xml);
-        String sameXml = MetaTable.toXml(sameTable);
+        String xml = table.toXml();
+        TableMetaData sameTable = TableMetaData.fromXml(xml);
+        String sameXml = sameTable.toXml();
 
         assert xml.trim().length() > 0;
         assert xml.equals(sameXml);

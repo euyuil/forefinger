@@ -9,12 +9,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @version 0.0.2014.03.05
  */
 @XStreamAlias("column")
-public class MetaTableColumn extends MetaDataColumn {
+public class TableMetaDataColumn extends MetaDataColumn {
 
-    public MetaTableColumn() {
+    public TableMetaDataColumn() {
     }
 
-    public MetaTableColumn(String name, Class type) {
+    public TableMetaDataColumn(String name, Class type) {
         super(name, type);
     }
 }

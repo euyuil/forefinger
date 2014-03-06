@@ -4,6 +4,8 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
+import java.io.File;
+
 /**
  * The class for a data table.
  * It's size could be really large,
@@ -14,7 +16,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @version 0.0.2014.03.05
  */
 @XStreamAlias("table")
-public class MetaTable extends MetaData {
+public class TableMetaData extends MetaData {
 
     static final XStream xmlSerDe = new XStream();
 
@@ -22,25 +24,25 @@ public class MetaTable extends MetaData {
         xmlSerDe.processAnnotations(new Class[]{
                 MetaData.class,
                 MetaDataColumn.class,
-                MetaTable.class,
-                MetaTableColumn.class,
-                MetaTableIndex.class,
+                TableMetaData.class,
+                TableMetaDataColumn.class,
+                TableMetaDataIndex.class,
         });
     }
 
-    public static MetaTable fromXml(String xml) {
-        return (MetaTable) xmlSerDe.fromXML(xml);
+    public static TableMetaData fromXml(String xml) {
+        return (TableMetaData) xmlSerDe.fromXML(xml);
     }
 
-    public static String toXml(MetaTable table) {
-        return xmlSerDe.toXML(table);
+    public static TableMetaData fromXmlFile(File xmlFile) {
+        return (TableMetaData) xmlSerDe.fromXML(xmlFile);
     }
 
     @XStreamImplicit(itemFieldName = "column")
-    private MetaTableColumn[] columns;
+    private TableMetaDataColumn[] columns;
 
     @XStreamImplicit(itemFieldName = "index")
-    private MetaTableIndex[] indices;
+    private TableMetaDataIndex[] indices;
 
     /**
      * The paths of the table data sets.
@@ -53,19 +55,19 @@ public class MetaTable extends MetaData {
         return columns;
     }
 
-    public MetaTableColumn[] getTableColumns() {
+    public TableMetaDataColumn[] getTableColumns() {
         return columns;
     }
 
-    public void setTableColumns(MetaTableColumn[] columns) {
+    public void setTableColumns(TableMetaDataColumn[] columns) {
         this.columns = columns;
     }
 
-    public MetaTableIndex[] getTableIndices() {
+    public TableMetaDataIndex[] getTableIndices() {
         return indices;
     }
 
-    public void setTableIndices(MetaTableIndex[] tableIndices) {
+    public void setTableIndices(TableMetaDataIndex[] tableIndices) {
         this.indices = tableIndices;
     }
 
@@ -75,5 +77,10 @@ public class MetaTable extends MetaData {
 
     public void setPaths(String[] paths) {
         this.paths = paths;
+    }
+
+    @Override
+    protected XStream getXmlSerDe() {
+        return xmlSerDe;
     }
 }
