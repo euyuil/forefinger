@@ -16,6 +16,14 @@ import java.util.Map;
  */
 public class MetaDataSet {
 
+    private static MetaDataSet metaDataSet;
+
+    public static MetaDataSet getDefault() {
+        if (metaDataSet == null)
+            metaDataSet = new MetaDataSet();
+        return metaDataSet;
+    }
+
     private String metaDataDir;
     private Map<String, MetaData> metaDataMap =
             new HashMap<String, MetaData>();
@@ -35,7 +43,7 @@ public class MetaDataSet {
     public MetaData getMetaData(String dataName) {
         if (metaDataMap.containsKey(dataName))
             return metaDataMap.get(dataName);
-        String metaDataPath = metaDataDir + File.pathSeparator + dataName + ".xml";
+        String metaDataPath = metaDataDir + File.separator + dataName + ".xml";
         File metaDataFile = new File(metaDataPath);
         if (!metaDataFile.exists() || !metaDataFile.isFile())
             return null;
@@ -64,7 +72,7 @@ public class MetaDataSet {
     }
 
     public void putMetaData(MetaData data) throws IOException {
-        String metaDataPath = metaDataDir + File.pathSeparator + data.getName() + ".xml";
+        String metaDataPath = metaDataDir + File.separator + data.getName() + ".xml";
         data.toXmlFile(new File(metaDataPath));
         metaDataMap.put(data.getName(), data);
     }

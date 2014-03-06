@@ -28,8 +28,7 @@ public class Environment {
      * Constructs a default Environment.
      */
     public Environment() {
-        this.homePath = System.getenv().get("FOREFINGER_HOME");
-        initialize();
+        initialize(System.getenv().get("FOREFINGER_HOME"));
     }
 
     /**
@@ -37,8 +36,7 @@ public class Environment {
      * @param homePath The root path of the environment.
      */
     public Environment(String homePath) {
-        this.homePath = homePath;
-        initialize();
+        initialize(homePath);
     }
 
     public String getHomePath() {
@@ -49,8 +47,14 @@ public class Environment {
         return metaDataPath;
     }
 
-    private void initialize() {
-        metaDataPath = homePath + File.pathSeparator + "meta";
+    private void initialize(String homePath) {
+        if (homePath == null)
+            throw new IllegalArgumentException("Cannot set home path to null. " +
+                    "Please check your arguments for the constructor of class " +
+                    "Environment, or the environment variable FOREFINGER_HOME " +
+                    "in your operating system.");
+        this.homePath = homePath;
+        metaDataPath = homePath + File.separator + "meta";
         new File(metaDataPath).mkdirs();
     }
 }

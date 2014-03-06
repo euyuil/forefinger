@@ -1,14 +1,17 @@
-package com.euyuil.forefinger.meta;
+package com.euyuil.forefinger;
 
+import com.euyuil.forefinger.meta.TableMetaData;
+import com.euyuil.forefinger.meta.TableMetaDataColumn;
+import com.euyuil.forefinger.meta.TableMetaDataIndex;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Liu Yue
- * @version 0.0.2014.03.05
+ * @version 0.0.2014.03.06
  */
-public class TableMetaDataTest {
+public class MetaDataSetTest {
 
     @Before
     public void setUp() throws Exception {
@@ -21,7 +24,7 @@ public class TableMetaDataTest {
     }
 
     @Test
-    public void testSerializeAndDeserialize() throws Exception {
+    public void testPutAndGetTableMetaData() throws Exception {
 
         TableMetaData table = new TableMetaData();
 
@@ -46,41 +49,36 @@ public class TableMetaDataTest {
                 new TableMetaDataIndex(TableMetaDataIndex.Type.FULLTEXT, "description"),
         });
 
+        MetaDataSet.getDefault().putMetaData(table);
+
+        MetaDataSet testMetaDataSet = new MetaDataSet();
+        TableMetaData sameTable = testMetaDataSet.getTableMetaData("user");
+
+        assert sameTable != null;
+
         String xml = table.toXml();
-        TableMetaData sameTable = TableMetaData.fromXml(xml);
         String sameXml = sameTable.toXml();
 
-        assert xml.trim().length() > 0;
         assert xml.equals(sameXml);
     }
 
     @Test
-    public void testGetName() throws Exception {
+    public void testGetMetaData() throws Exception {
 
     }
 
     @Test
-    public void testSetName() throws Exception {
+    public void testGetTableMetaData() throws Exception {
 
     }
 
     @Test
-    public void testGetPaths() throws Exception {
+    public void testGetViewMetaData() throws Exception {
 
     }
 
     @Test
-    public void testSetPaths() throws Exception {
-
-    }
-
-    @Test
-    public void testGetSchema() throws Exception {
-
-    }
-
-    @Test
-    public void testSetSchema() throws Exception {
+    public void testPutMetaData() throws Exception {
 
     }
 }
