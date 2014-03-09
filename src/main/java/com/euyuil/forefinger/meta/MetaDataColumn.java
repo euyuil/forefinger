@@ -38,6 +38,8 @@ public abstract class MetaDataColumn {
         return type;
     }
 
+    public abstract MetaData getMetaData();
+
     public EqualCondition isEqualTo(Object value) {
         return new EqualCondition(this, value);
     }

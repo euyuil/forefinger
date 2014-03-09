@@ -24,16 +24,23 @@ public class MetaDataSet {
         return metaDataSet;
     }
 
+    private static String createMetaDataDir(String homePath) {
+        String metaDataDir = homePath + File.separator + "meta";
+        new File(metaDataDir).mkdirs();
+        return metaDataDir;
+    }
+
     private String metaDataDir;
     private Map<String, MetaData> metaDataMap =
             new HashMap<String, MetaData>();
 
     public MetaDataSet() {
-        this.metaDataDir = Environment.getDefault().getMetaDataPath();
+        this.metaDataDir = createMetaDataDir(
+                Environment.getDefault().getHomePath());
     }
 
     public MetaDataSet(Environment environment) {
-        this.metaDataDir = environment.getMetaDataPath();
+        this.metaDataDir = createMetaDataDir(environment.getHomePath());
     }
 
     public MetaDataSet(String metaDataDir) {

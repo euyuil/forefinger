@@ -1,7 +1,7 @@
 package com.euyuil.forefinger.query;
 
-import com.euyuil.forefinger.meta.MetaDataColumn;
-import com.euyuil.forefinger.meta.TableMetaDataColumn;
+import com.euyuil.forefinger.MetaDataSet;
+import com.euyuil.forefinger.meta.TableMetaData;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -13,9 +13,16 @@ public class TableQueryTest extends TestCase {
 
     @Test
     public void testQueryConstruction() {
-        // TODO Fix the query.
-        Query query = new Query()
-                .where(new TableMetaDataColumn().isEqualTo(1))
-                .and(new TableMetaDataColumn().isEqualTo(2));
+
+        TableMetaData table = MetaDataSet.getDefault().getTableMetaData("user");
+
+        Query query = Query
+                .select(table.allColumns())
+                .where(
+                        table.getTableColumn("id").isEqualTo(1)
+                    .or(table.getTableColumn("id").isEqualTo(2))
+                );
+
+        query.execute();
     }
 }

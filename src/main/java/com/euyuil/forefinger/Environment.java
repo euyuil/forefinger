@@ -1,7 +1,5 @@
 package com.euyuil.forefinger;
 
-import java.io.File;
-
 /**
  * @author Liu Yue
  * @version 0.0.2014.03.06
@@ -22,7 +20,6 @@ public class Environment {
     }
 
     private String homePath;
-    private String metaDataPath;
 
     /**
      * Constructs a default Environment.
@@ -43,10 +40,6 @@ public class Environment {
         return homePath;
     }
 
-    public String getMetaDataPath() {
-        return metaDataPath;
-    }
-
     private void initialize(String homePath) {
         if (homePath == null)
             throw new IllegalArgumentException("Cannot set home path to null. " +
@@ -54,7 +47,5 @@ public class Environment {
                     "Environment, or the environment variable FOREFINGER_HOME " +
                     "in your operating system.");
         this.homePath = homePath;
-        metaDataPath = homePath + File.separator + "meta";
-        new File(metaDataPath).mkdirs();
     }
 }

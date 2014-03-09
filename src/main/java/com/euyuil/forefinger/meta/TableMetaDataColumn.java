@@ -17,4 +17,9 @@ public class TableMetaDataColumn extends MetaDataColumn {
     public TableMetaDataColumn(String name, Class type) {
         super(name, type);
     }
+
+    @Override
+    public MetaData getMetaData() {
+        return null;
+    }
 }

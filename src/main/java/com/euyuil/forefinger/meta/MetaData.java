@@ -29,6 +29,8 @@ public abstract class MetaData {
 
     public abstract MetaDataColumn[] getDataColumns();
 
+    public abstract MetaDataColumn getDataColumn(String columnName);
+
     protected abstract XStream getXmlSerDe();
 
     public String toXml() {

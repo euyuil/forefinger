@@ -49,6 +49,11 @@ public class ViewMetaData extends MetaData {
     }
 
     @Override
+    public MetaDataColumn getDataColumn(String columnName) {
+        return null;
+    }
+
+    @Override
     protected XStream getXmlSerDe() {
         return xmlSerDe;
     }

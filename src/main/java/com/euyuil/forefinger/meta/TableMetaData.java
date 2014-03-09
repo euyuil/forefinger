@@ -50,6 +50,14 @@ public class TableMetaData extends MetaData {
     @XStreamImplicit(itemFieldName = "path")
     private String[] paths;
 
+    /**
+     * Returns all the columns to the select query (projection).
+     * @return a MetaDataColumn object stands for all the columns.
+     */
+    public MetaDataColumn allColumns() {
+        return null; // TODO
+    }
+
     @Override
     public MetaDataColumn[] getDataColumns() {
         return columns;
@@ -61,6 +69,15 @@ public class TableMetaData extends MetaData {
 
     public void setTableColumns(TableMetaDataColumn[] columns) {
         this.columns = columns;
+    }
+
+    @Override
+    public MetaDataColumn getDataColumn(String columnName) {
+        return getTableColumn(columnName);
+    }
+
+    public TableMetaDataColumn getTableColumn(String columnName) {
+        return null; // TODO
     }
 
     public TableMetaDataIndex[] getTableIndices() {
