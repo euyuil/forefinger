@@ -1,4 +1,4 @@
-package com.euyuil.forefinger.query;
+package com.euyuil.forefinger;
 
 /**
  * @author Liu Yue

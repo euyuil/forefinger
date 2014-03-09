@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.query.EqualCondition;
+import com.euyuil.forefinger.condition.EqualCondition;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.converters.SingleValueConverter;

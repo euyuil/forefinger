@@ -1,4 +1,6 @@
-package com.euyuil.forefinger.query;
+package com.euyuil.forefinger.condition;
+
+import com.euyuil.forefinger.DataRow;
 
 /**
  * Interestingly, this class knows some of its sub classes.

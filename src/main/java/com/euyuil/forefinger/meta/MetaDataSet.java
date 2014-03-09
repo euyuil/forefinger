@@ -1,8 +1,6 @@
-package com.euyuil.forefinger;
+package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.meta.MetaData;
-import com.euyuil.forefinger.meta.TableMetaData;
-import com.euyuil.forefinger.meta.ViewMetaData;
+import com.euyuil.forefinger.Environment;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.File;

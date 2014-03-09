@@ -1,10 +1,12 @@
-package com.euyuil.forefinger.query;
+package com.euyuil.forefinger;
 
-import com.euyuil.forefinger.MetaDataSet;
+import com.euyuil.forefinger.meta.MetaDataSet;
+import com.euyuil.forefinger.condition.Condition;
 import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.MetaDataColumn;
 import com.euyuil.forefinger.meta.TableMetaData;
 import com.euyuil.forefinger.meta.ViewMetaData;
+import org.apache.hadoop.mapred.jobcontrol.Job;
 
 import java.util.*;
 
@@ -47,15 +49,7 @@ public class Query {
         return this;
     }
 
-    public Object result() {
-        return null;
-    }
-
-    public ResultSet resultSet() {
-        return null;
-    }
-
-    public Query execute() {
+    public Job build() {
 
         Map<String, TableMetaData> involvedTables = new HashMap<String, TableMetaData>();
         Map<String, MetaData> involvedData = new HashMap<String, MetaData>();
@@ -69,7 +63,7 @@ public class Query {
         for (TableMetaData tableMetaData : tableMetaDataList)
             involvedTables.put(tableMetaData.getName(), tableMetaData);
 
-        return this;
+        return null;
     }
 
     private static ArrayList<TableMetaData> getUnderlyingTableMetaDataList(

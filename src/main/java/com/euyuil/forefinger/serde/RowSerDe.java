@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.serde;
 
-import com.euyuil.forefinger.query.DataRow;
+import com.euyuil.forefinger.DataRow;
 
 /**
  * @author Liu Yue
