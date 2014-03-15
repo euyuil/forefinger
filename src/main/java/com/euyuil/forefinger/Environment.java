@@ -1,6 +1,14 @@
 package com.euyuil.forefinger;
 
 /**
+ * The Environment object for the Forefinger system.
+ * Users could call Environment.getDefault() to obtain the default
+ * Environment object.
+ *
+ * The path of the environment could be hacked for special purposes,
+ * for example, testing. In this case you should use the constructor
+ * with one String parameter.
+ *
  * @author Liu Yue
  * @version 0.0.2014.03.06
  */
@@ -19,12 +27,15 @@ public class Environment {
         return environment;
     }
 
+    /**
+     * Path to the Forefinger home.
+     */
     private String homePath;
 
     /**
      * Constructs a default Environment.
      */
-    public Environment() {
+    private Environment() {
         initialize(System.getenv().get("FOREFINGER_HOME"));
     }
 
@@ -36,10 +47,17 @@ public class Environment {
         initialize(homePath);
     }
 
+    /**
+     * @return the home path of the environment.
+     */
     public String getHomePath() {
         return homePath;
     }
 
+    /**
+     * Initializes an Environment object.
+     * @param homePath the path to the Forefinger home.
+     */
     private void initialize(String homePath) {
         if (homePath == null)
             throw new IllegalArgumentException("Cannot set home path to null. " +

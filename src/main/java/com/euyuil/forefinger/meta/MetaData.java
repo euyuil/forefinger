@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author Liu Yue
@@ -37,9 +38,12 @@ public abstract class MetaData {
         return getXmlSerDe().toXML(this);
     }
 
-    public void toXmlFile(File file)
-            throws IOException {
+    public void toXmlFile(File file) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(file);
+        toXmlStream(outputStream);
+    }
+
+    public void toXmlStream(OutputStream outputStream) throws IOException {
         getXmlSerDe().toXML(this, outputStream);
         outputStream.flush();
         outputStream.close();
