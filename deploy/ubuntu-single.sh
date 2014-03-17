@@ -29,20 +29,31 @@ ln -s /opt/$HDNAME /opt/hadoop
 
 echo 'export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true' >> /opt/hadoop/conf/hadoop-env.sh
 
-su -c "echo 'export HADOOP_PREFIX=/opt/hadoop' >> ~/.bashrc" -s /bin/bash $HDUSER
-su -c "echo 'export PATH=\$PATH:\$HADOOP_PREFIX/bin' >> ~/.bashrc" -s /bin/bash $HDUSER
-su -c "echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> ~/.bashrc" -s /bin/bash $HDUSER
+echo 'export HADOOP_PREFIX=/opt/hadoop' >> /etc/bashrc
+echo 'export PATH=$PATH:$HADOOP_PREFIX/bin' >> /etc/bashrc
+echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> /etc/bashrc
 echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> /opt/hadoop/conf/hadoop-env.sh
 
-su -c "echo 'unalias hfs &> /dev/null' >> ~/.bashrc" -s /bin/bash $HDUSER
-su -c "echo \"alias hfs='hadoop fs'\" >> ~/.bashrc" -s /bin/bash $HDUSER
-su -c "echo 'unalias hls &> /dev/null' >> ~/.bashrc" -s /bin/bash $HDUSER
-su -c "echo \"alias hls='hfs -ls'\" >> ~/.bashrc" -s /bin/bash $HDUSER
+echo "alias hfs='hadoop fs'"            >> /etc/bashrc
+echo "alias hls='hfs -ls'"              >> /etc/bashrc
+echo "alias hcat='hfs -cat'"            >> /etc/bashrc
+echo "alias hchgrp='hfs -chgrp'"        >> /etc/bashrc
+echo "alias hchown='hfs -chown'"        >> /etc/bashrc
+echo "alias hcpfl='hfs -copyFromLocal'" >> /etc/bashrc
+echo "alias hcpfl='hfs -copyToLocal'"   >> /etc/bashrc
+echo "alias hcp='hfs -cp'"              >> /etc/bashrc
+echo "alias hmv='hfs -mv'"              >> /etc/bashrc
+echo "alias hget='hfs -get'"            >> /etc/bashrc
+echo "alias hput='hfs -put'"            >> /etc/bashrc
+
+su -c "echo 'source /etc/bashrc' >> ~/.bashrc" -s /bin/bash $HDUSER
 
 \cp -rf ./conf-single/* /opt/hadoop/conf
 
 chown -R hadoop:hadoop /opt/$HDNAME
 
-su -c "source ~/.bashrc && hadoop namenode -format" -s /bin/bash $HDUSER
-su -c "source ~/.bashrc && start-all.sh" -s /bin/bash $HDUSER
-su -c "source ~/.bashrc && hls /" -s /bin/bash $HDUSER
+su -c "source /etc/bashrc && hadoop namenode -format -nonInteractive -force" -s /bin/bash $HDUSER
+su -c "source /etc/bashrc && start-all.sh" -s /bin/bash $HDUSER
+su -c "source /etc/bashrc && jps /" -s /bin/bash $HDUSER
+netstat -plten | grep java
+su -c "source /etc/bashrc && hadoop fs -ls /" -s /bin/bash $HDUSER
