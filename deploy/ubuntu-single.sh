@@ -29,19 +29,20 @@ ln -s /opt/$HDNAME /opt/hadoop
 
 echo 'export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true' >> /opt/hadoop/conf/hadoop-env.sh
 
-su -c "echo 'export HADOOP_PREFIX=/opt/hadoop' >> ~/.profile" -s /bin/bash $HDUSER
-su -c "echo 'export PATH=\$PATH:\$HADOOP_PREFIX/bin' >> ~/.profile" -s /bin/bash $HDUSER
-su -c "echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> ~/.profile" -s /bin/bash $HDUSER
+su -c "echo 'export HADOOP_PREFIX=/opt/hadoop' >> ~/.bashrc" -s /bin/bash $HDUSER
+su -c "echo 'export PATH=\$PATH:\$HADOOP_PREFIX/bin' >> ~/.bashrc" -s /bin/bash $HDUSER
+su -c "echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> ~/.bashrc" -s /bin/bash $HDUSER
 echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> /opt/hadoop/conf/hadoop-env.sh
 
-su -c "echo 'unalias hfs &> /dev/null' >> ~/.profile" -s /bin/bash $HDUSER
-su -c "echo \"alias hfs='hadoop fs'\" >> ~/.profile" -s /bin/bash $HDUSER
-su -c "echo 'unalias hls &> /dev/null' >> ~/.profile" -s /bin/bash $HDUSER
-su -c "echo \"alias hls='hfs -ls'\" >> ~/.profile" -s /bin/bash $HDUSER
+su -c "echo 'unalias hfs &> /dev/null' >> ~/.bashrc" -s /bin/bash $HDUSER
+su -c "echo \"alias hfs='hadoop fs'\" >> ~/.bashrc" -s /bin/bash $HDUSER
+su -c "echo 'unalias hls &> /dev/null' >> ~/.bashrc" -s /bin/bash $HDUSER
+su -c "echo \"alias hls='hfs -ls'\" >> ~/.bashrc" -s /bin/bash $HDUSER
 
 \cp -rf ./conf-single/* /opt/hadoop/conf
 
 chown -R hadoop:hadoop /opt/$HDNAME
 
-su -c "source ~/.profile && hadoop namenode -format" -s /bin/bash $HDUSER
-su -c "source ~/.profile && start-all.sh" -s /bin/bash $HDUSER
+su -c "source ~/.bashrc && hadoop namenode -format" -s /bin/bash $HDUSER
+su -c "source ~/.bashrc && start-all.sh" -s /bin/bash $HDUSER
+su -c "source ~/.bashrc && hls /" -s /bin/bash $HDUSER
