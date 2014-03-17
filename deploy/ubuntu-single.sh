@@ -19,6 +19,8 @@ apt-get install -y openssh-server \
 useradd --create-home --user-group --shell /bin/bash $HDUSER
 su -c "ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''" -s /bin/bash $HDUSER
 su -c "cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys" -s /bin/bash $HDUSER
+su -c "ssh-keyscan -t ecdsa localhost >> ~/.ssh/known_hosts" -s /bin/bash $HDUSER
+su -c "ssh-keyscan -t ecdsa 127.0.0.1 >> ~/.ssh/known_hosts" -s /bin/bash $HDUSER
 
 wget $HDURL -O $HDTEMP
 mkdir /opt
