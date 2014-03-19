@@ -1,4 +1,4 @@
-package com.euyuil.forefinger;
+package com.euyuil.forefinger.meta;
 
 /**
  * @author Liu Yue

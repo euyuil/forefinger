@@ -1,7 +1,7 @@
 package com.euyuil.forefinger;
 
 import com.euyuil.forefinger.meta.MetaDataSet;
-import com.euyuil.forefinger.condition.Condition;
+import com.euyuil.forefinger.meta.condition.Condition;
 import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.MetaDataColumn;
 import com.euyuil.forefinger.meta.TableMetaData;

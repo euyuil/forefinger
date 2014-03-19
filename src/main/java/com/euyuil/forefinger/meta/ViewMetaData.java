@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.condition.Condition;
+import com.euyuil.forefinger.meta.condition.Condition;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

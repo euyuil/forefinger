@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.function.Function;
+import com.euyuil.forefinger.meta.function.Function;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

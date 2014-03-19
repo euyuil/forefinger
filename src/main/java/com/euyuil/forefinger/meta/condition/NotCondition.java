@@ -1,4 +1,4 @@
-package com.euyuil.forefinger.condition;
+package com.euyuil.forefinger.meta.condition;
 
 import com.euyuil.forefinger.meta.MetaDataColumn;
 import com.euyuil.forefinger.DataRow;

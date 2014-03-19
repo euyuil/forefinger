@@ -1,6 +1,5 @@
 package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.Expression;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 

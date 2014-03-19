@@ -1,7 +1,7 @@
-package com.euyuil.forefinger.condition;
+package com.euyuil.forefinger.meta.condition;
 
 import com.euyuil.forefinger.DataRow;
-import com.euyuil.forefinger.Expression;
+import com.euyuil.forefinger.meta.Expression;
 
 /**
  * Interestingly, this class knows some of its sub classes.

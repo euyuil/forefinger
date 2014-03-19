@@ -1,6 +1,6 @@
-package com.euyuil.forefinger.function;
+package com.euyuil.forefinger.meta.function;
 
-import com.euyuil.forefinger.Expression;
+import com.euyuil.forefinger.meta.Expression;
 
 /**
  * @author Liu Yue
