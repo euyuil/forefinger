@@ -1,6 +1,7 @@
 package com.euyuil.forefinger.condition;
 
 import com.euyuil.forefinger.DataRow;
+import com.euyuil.forefinger.Expression;
 
 /**
  * Interestingly, this class knows some of its sub classes.
@@ -8,7 +9,7 @@ import com.euyuil.forefinger.DataRow;
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
-public abstract class Condition {
+public abstract class Condition implements Expression {
 
     public static NotCondition not(Condition condition) {
         return condition.negate();

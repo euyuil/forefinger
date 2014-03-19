@@ -5,6 +5,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The class for a data table.
@@ -17,6 +21,52 @@ import java.io.File;
  */
 @XStreamAlias("table")
 public class TableMetaData extends MetaData {
+
+    /**
+     * The indices of the table data.
+     */
+    @XStreamImplicit(itemFieldName = "index")
+    private ArrayList<TableMetaDataIndex> indices;
+
+    public List<TableMetaDataIndex> getIndices() {
+        return Collections.unmodifiableList(indices);
+    }
+
+    public void setIndices(ArrayList<TableMetaDataIndex> indices) {
+        this.indices = indices;
+        // TODO Do something to save meta data and generate indices.
+    }
+
+    /**
+     * The paths of the table data sets.
+     */
+    @XStreamImplicit(itemFieldName = "path")
+    private ArrayList<String> paths;
+
+    public List<String> getPaths() {
+        return Collections.unmodifiableList(paths);
+    }
+
+    public void setPaths(ArrayList<String> paths) {
+        this.paths = paths;
+        // TODO Do something to save meta data.
+    }
+
+    /**
+     * Constructs a TableMetaData object specifying MetaDataSet object.
+     * @param metaDataSet the MetaDataSet object.
+     */
+    public TableMetaData(MetaDataSet metaDataSet) {
+        super(metaDataSet);
+    }
+
+    /**
+     * @return the XML SerDe.
+     */
+    @Override
+    protected XStream getXmlSerDe() {
+        return xmlSerDe;
+    }
 
     static final XStream xmlSerDe = new XStream();
 
@@ -38,66 +88,7 @@ public class TableMetaData extends MetaData {
         return (TableMetaData) xmlSerDe.fromXML(xmlFile);
     }
 
-    @XStreamImplicit(itemFieldName = "column")
-    private TableMetaDataColumn[] columns;
-
-    @XStreamImplicit(itemFieldName = "index")
-    private TableMetaDataIndex[] indices;
-
-    /**
-     * The paths of the table data sets.
-     */
-    @XStreamImplicit(itemFieldName = "path")
-    private String[] paths;
-
-    /**
-     * Returns all the columns to the select query (projection).
-     * @return a MetaDataColumn object stands for all the columns.
-     */
-    public MetaDataColumn allColumns() {
-        return null; // TODO
-    }
-
-    @Override
-    public MetaDataColumn[] getDataColumns() {
-        return columns;
-    }
-
-    public TableMetaDataColumn[] getTableColumns() {
-        return columns;
-    }
-
-    public void setTableColumns(TableMetaDataColumn[] columns) {
-        this.columns = columns;
-    }
-
-    @Override
-    public MetaDataColumn getDataColumn(String columnName) {
-        return getTableColumn(columnName);
-    }
-
-    public TableMetaDataColumn getTableColumn(String columnName) {
-        return null; // TODO
-    }
-
-    public TableMetaDataIndex[] getTableIndices() {
-        return indices;
-    }
-
-    public void setTableIndices(TableMetaDataIndex[] tableIndices) {
-        this.indices = tableIndices;
-    }
-
-    public String[] getPaths() {
-        return paths;
-    }
-
-    public void setPaths(String[] paths) {
-        this.paths = paths;
-    }
-
-    @Override
-    protected XStream getXmlSerDe() {
-        return xmlSerDe;
+    public static TableMetaData fromXmlStream(InputStream stream) {
+        return (TableMetaData) xmlSerDe.fromXML(stream);
     }
 }

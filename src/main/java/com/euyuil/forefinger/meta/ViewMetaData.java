@@ -1,10 +1,11 @@
 package com.euyuil.forefinger.meta;
 
+import com.euyuil.forefinger.condition.Condition;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * @author Liu Yue
@@ -12,6 +13,57 @@ import java.io.File;
  */
 @XStreamAlias("view")
 public class ViewMetaData extends MetaData {
+
+    /**
+     * Constructs a ViewMetaData object specifying MetaDataSet object.
+     * @param metaDataSet the MetaDataSet object.
+     */
+    public ViewMetaData(MetaDataSet metaDataSet) {
+        super(metaDataSet);
+    }
+
+    @XStreamAlias("where")
+    private Condition condition;
+
+    @XStreamAlias("orderBy")
+    private ArrayList<String> orders; // TODO
+
+    @XStreamAlias("groupBy")
+    private ArrayList<String> groups; // TODO
+
+    public boolean isSimple() {
+        return true; // TODO Maybe use another classes to represent compound views.
+    }
+
+    public boolean isAggregate() {
+        return false; // TODO
+    }
+
+    public boolean isUnion() {
+        return false; // TODO
+    }
+
+    public boolean isMaterial() {
+        if (isUnion())
+            return true;
+        return false; // TODO
+    }
+
+    public boolean isJoin() {
+        return false; // TODO
+    }
+
+    public boolean isTemporary() {
+        return false; // TODO
+    }
+
+    /**
+     * @return the XML SerDe.
+     */
+    @Override
+    protected XStream getXmlSerDe() {
+        return xmlSerDe;
+    }
 
     static final XStream xmlSerDe = new XStream();
 
@@ -30,31 +82,5 @@ public class ViewMetaData extends MetaData {
 
     public static ViewMetaData fromXmlFile(File xmlFile) {
         return (ViewMetaData) xmlSerDe.fromXML(xmlFile);
-    }
-
-    @XStreamImplicit(itemFieldName = "column")
-    private ViewMetaDataColumn[] columns;
-
-    public ViewMetaDataColumn[] getViewColumns() {
-        return columns;
-    }
-
-    public void setViewColumns(ViewMetaDataColumn[] columns) {
-        this.columns = columns;
-    }
-
-    @Override
-    public MetaDataColumn[] getDataColumns() {
-        return columns;
-    }
-
-    @Override
-    public MetaDataColumn getDataColumn(String columnName) {
-        return null;
-    }
-
-    @Override
-    protected XStream getXmlSerDe() {
-        return xmlSerDe;
     }
 }

@@ -1,30 +1,28 @@
 package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.condition.EqualCondition;
+import com.euyuil.forefinger.Expression;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
-import com.thoughtworks.xstream.converters.SingleValueConverter;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
-public abstract class MetaDataColumn {
+public abstract class MetaDataColumn implements Expression {
 
-    @XStreamAsAttribute
-    private String name;
-
-    @XStreamAsAttribute
-    @XStreamConverter(TypeConverter.class)
-    private Class type;
-
-    public MetaDataColumn() {
+    /**
+     * Constructs a MetaDataColumn object specifying MetaData object.
+     * @param metaData the MetaData object.
+     */
+    public MetaDataColumn(MetaData metaData) {
+        this.metaData = metaData;
     }
 
-    public MetaDataColumn(String name, Class type) {
-        this.name = name;
-        this.type = type;
-    }
+    /**
+     * The name of the column.
+     */
+    @XStreamAsAttribute
+    protected String name;
 
     public String getName() {
         return name;
@@ -34,48 +32,31 @@ public abstract class MetaDataColumn {
         this.name = name;
     }
 
-    public Class getType() {
-        return type;
+    /**
+     * The reference to the MetaData object.
+     */
+    @XStreamOmitField
+    protected MetaData metaData;
+
+    public MetaData getMetaData() {
+        return metaData;
     }
 
-    public abstract MetaData getMetaData();
-
-    public EqualCondition isEqualTo(Object value) {
-        return new EqualCondition(this, value);
+    protected void setMetaData(MetaData metaData) {
+        this.metaData = metaData;
     }
 
-    public EqualCondition isEqualTo(MetaDataColumn column) {
-        return new EqualCondition(this, column);
+    /**
+     * Gets the MetaDataSet object that creates the MetaData object that creates this object.
+     */
+    public MetaDataSet getMetaDataSet() {
+        return getMetaData().getMetaDataSet();
     }
 
-    public void setType(Class type) {
-        this.type = type;
-    }
-
-    public static class TypeConverter implements SingleValueConverter {
-
-        @Override
-        public String toString(Object o) {
-            Class clazz = (Class) o;
-            return clazz.getSimpleName();
-        }
-
-        @Override
-        public Object fromString(String s) {
-            String typeName = s.substring(0, 1).toUpperCase() +
-                    s.substring(1).toLowerCase();
-            String typeFullName = String.format("java.lang.%s", typeName);
-            try {
-                return Class.forName(typeFullName);
-            } catch (ClassNotFoundException e) {
-                // TODO Error reporting.
-                return null;
-            }
-        }
-
-        @Override
-        public boolean canConvert(Class clazz) {
-            return (clazz.equals(Class.class));
-        }
-    }
+    /**
+     * Sub-classes should override this method to return the resulting type of the column.
+     * @return the resulting type of the column.
+     */
+    @Override
+    public abstract Class getResultType();
 }
