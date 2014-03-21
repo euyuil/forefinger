@@ -119,7 +119,7 @@ public class MetaDataSet {
         XStream xStream = new XStream();
         xStream.processAnnotations(new Class[] {
                 TableMetaData.class,
-                ViewMetaData.class,
+                BasicViewMetaData.class,
         });
         MetaData metaData = (MetaData) xStream.fromXML(metaDataInputStream);
         metaDataMap.put(dataName, metaData);
@@ -130,17 +130,11 @@ public class MetaDataSet {
         return metaData;
     }
 
-    public TableMetaData getTableMetaData(String tableName) {
-        MetaData metaData = getMetaData(tableName);
-        if (metaData instanceof TableMetaData)
-            return (TableMetaData) metaData;
-        return null;
-    }
-
-    public ViewMetaData getViewMetaData(String viewName) {
-        MetaData metaData = getMetaData(viewName);
-        if (metaData instanceof ViewMetaData)
-            return (ViewMetaData) metaData;
+    @SuppressWarnings("unchecked")
+    public <T extends MetaData> T getMetaData(String dataName, Class<T> clazz) {
+        MetaData result = getMetaData(dataName);
+        if (result.getClass().equals(clazz))
+            return (T) result;
         return null;
     }
 

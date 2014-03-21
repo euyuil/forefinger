@@ -53,7 +53,7 @@ public class MetaDataSetTest {
         MetaDataSet.getDefault().putMetaData(table);
 
         MetaDataSet testMetaDataSet = new MetaDataSet();
-        TableMetaData sameTable = testMetaDataSet.getTableMetaData("user");
+        TableMetaData sameTable = testMetaDataSet.getMetaData("user", TableMetaData.class);
 
         assert sameTable != null;
 

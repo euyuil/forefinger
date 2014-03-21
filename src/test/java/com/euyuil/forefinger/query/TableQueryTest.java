@@ -14,7 +14,7 @@ public class TableQueryTest extends TestCase {
     @Test
     public void testQueryConstruction() {
 
-        TableMetaData table = MetaDataSet.getDefault().getTableMetaData("user");
+        TableMetaData table = MetaDataSet.getDefault().getMetaData("user", TableMetaData.class);
 
     }
 }

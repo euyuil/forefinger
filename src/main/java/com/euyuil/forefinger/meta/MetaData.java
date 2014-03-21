@@ -68,6 +68,7 @@ public abstract class MetaData {
     public void setMetaDataColumns(ArrayList<MetaDataColumn> metaDataColumns) {
         this.metaDataColumns = metaDataColumns;
         // TODO Save meta data or something.
+        // TODO Maybe copying is better.
     }
 
     public MetaDataColumn getMetaDataColumn(String columnName) {
