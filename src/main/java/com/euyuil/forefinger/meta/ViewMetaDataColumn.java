@@ -4,16 +4,16 @@ import com.euyuil.forefinger.meta.function.Function;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * BasicViewMetaData projection with convert functions.
+ * ViewMetaData projection with convert functions.
  *
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
 @XStreamAlias("column")
-public class BasicViewMetaDataColumn extends MetaDataColumn {
+public class ViewMetaDataColumn extends MetaDataColumn {
 
-    public BasicViewMetaDataColumn(BasicViewMetaData basicViewMetaData) {
-        super(basicViewMetaData);
+    public ViewMetaDataColumn(ViewMetaData viewMetaData) {
+        super(viewMetaData);
     }
 
     /**

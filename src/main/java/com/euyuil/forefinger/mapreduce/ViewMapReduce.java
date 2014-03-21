@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
-import com.euyuil.forefinger.meta.BasicViewMetaData;
+import com.euyuil.forefinger.meta.ViewMetaData;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
@@ -36,18 +36,18 @@ public class ViewMapReduce {
 
     public static class ViewMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
-        private BasicViewMetaData basicViewMetaData;
+        private ViewMetaData viewMetaData;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
-            // TODO Read basicViewMetaData from job configuration.
+            // TODO Read viewMetaData from job configuration.
         }
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-            if (basicViewMetaData.getKeyType() == BasicViewMetaData.KeyType.ORDER) {
+            if (viewMetaData.getKeyType() == ViewMetaData.KeyType.ORDER) {
                 //
             }
         }

@@ -2,7 +2,7 @@ package com.euyuil.forefinger;
 
 import com.euyuil.forefinger.meta.*;
 import com.euyuil.forefinger.meta.condition.Condition;
-import com.euyuil.forefinger.meta.BasicViewMetaData;
+import com.euyuil.forefinger.meta.ViewMetaData;
 import org.apache.hadoop.mapred.jobcontrol.Job;
 
 import java.util.*;
@@ -13,13 +13,13 @@ import java.util.*;
  */
 public class Query {
 
-    public static Query select(List<BasicViewMetaData> projection) {
+    public static Query select(List<ViewMetaData> projection) {
         Query query = new Query();
         query.projection.addAll(projection);
         return query;
     }
 
-    public static Query select(BasicViewMetaData... projection) {
+    public static Query select(ViewMetaData... projection) {
         return select(Arrays.asList(projection));
     }
 
@@ -36,8 +36,8 @@ public class Query {
     /**
      * The projection of the query.
      */
-    private ArrayList<BasicViewMetaData> projection =
-            new ArrayList<BasicViewMetaData>();
+    private ArrayList<ViewMetaData> projection =
+            new ArrayList<ViewMetaData>();
 
     private Condition selection;
 
@@ -51,8 +51,8 @@ public class Query {
         Map<String, TableMetaData> involvedTables = new HashMap<String, TableMetaData>();
         Map<String, MetaData> involvedData = new HashMap<String, MetaData>();
 
-        for (BasicViewMetaData basicViewMetaData : projection)
-            involvedData.put(basicViewMetaData.getName(), basicViewMetaData);
+        for (ViewMetaData viewMetaData : projection)
+            involvedData.put(viewMetaData.getName(), viewMetaData);
 
         List<TableMetaData> tableMetaDataList =
                 getUnderlyingTableMetaDataList(involvedData.values());

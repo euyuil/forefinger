@@ -14,14 +14,14 @@ import java.util.List;
  * @author Liu Yue
  * @version 0.0.2014.03.05
  */
-@XStreamAlias("basicView")
-public class BasicViewMetaData extends MetaData {
+@XStreamAlias("view")
+public class ViewMetaData extends MetaData {
 
     /**
-     * Constructs a BasicViewMetaData object specifying MetaDataSet object.
+     * Constructs a ViewMetaData object specifying MetaDataSet object.
      * @param metaDataSet the MetaDataSet object.
      */
-    public BasicViewMetaData(MetaDataSet metaDataSet) {
+    public ViewMetaData(MetaDataSet metaDataSet) {
         super(metaDataSet);
     }
 
@@ -65,13 +65,13 @@ public class BasicViewMetaData extends MetaData {
      * GroupBy columns. Should NOT set them again in the standard column property.
      */
     @XStreamImplicit(itemFieldName = "groupBy")
-    private ArrayList<BasicViewMetaDataColumn> groupByColumns; // TODO
+    private ArrayList<ViewMetaDataColumn> groupByColumns; // TODO
 
-    public List<BasicViewMetaDataColumn> getGroupByColumns() {
+    public List<ViewMetaDataColumn> getGroupByColumns() {
         return Collections.unmodifiableList(groupByColumns);
     }
 
-    public void setGroupByColumns(ArrayList<BasicViewMetaDataColumn> groupByColumns) {
+    public void setGroupByColumns(ArrayList<ViewMetaDataColumn> groupByColumns) {
         this.groupByColumns = groupByColumns;
         // TODO Save.
     }
@@ -89,11 +89,11 @@ public class BasicViewMetaData extends MetaData {
      */
     public static class OrderByItem {
 
-        private BasicViewMetaDataColumn column;
+        private ViewMetaDataColumn column;
 
         private OrderType type;
 
-        public OrderByItem(BasicViewMetaDataColumn column, OrderType type) {
+        public OrderByItem(ViewMetaDataColumn column, OrderType type) {
             this.column = column;
             this.type = type;
         }
@@ -130,16 +130,16 @@ public class BasicViewMetaData extends MetaData {
         xmlSerDe.processAnnotations(new Class[]{
                 MetaData.class,
                 MetaDataColumn.class,
-                BasicViewMetaData.class,
-                BasicViewMetaDataColumn.class,
+                ViewMetaData.class,
+                ViewMetaDataColumn.class,
         });
     }
 
-    public static BasicViewMetaData fromXml(String xml) {
-        return (BasicViewMetaData) xmlSerDe.fromXML(xml);
+    public static ViewMetaData fromXml(String xml) {
+        return (ViewMetaData) xmlSerDe.fromXML(xml);
     }
 
-    public static BasicViewMetaData fromXmlFile(File xmlFile) {
-        return (BasicViewMetaData) xmlSerDe.fromXML(xmlFile);
+    public static ViewMetaData fromXmlFile(File xmlFile) {
+        return (ViewMetaData) xmlSerDe.fromXML(xmlFile);
     }
 }

@@ -119,7 +119,7 @@ public class MetaDataSet {
         XStream xStream = new XStream();
         xStream.processAnnotations(new Class[] {
                 TableMetaData.class,
-                BasicViewMetaData.class,
+                ViewMetaData.class,
         });
         MetaData metaData = (MetaData) xStream.fromXML(metaDataInputStream);
         metaDataMap.put(dataName, metaData);
