@@ -25,18 +25,24 @@ public class ViewMetaData extends MetaData {
         super(metaDataSet);
     }
 
-    @XStreamAlias("type")
-    private KeyType keyType;
+    /**
+     * What's the key used for? The key is for data transportation between Map and Reduce job.
+     */
+    @XStreamAlias("usage")
+    private KeyUsage keyUsage;
 
-    public KeyType getKeyType() {
-        return keyType;
+    public KeyUsage getKeyUsage() {
+        return keyUsage;
     }
 
-    public void setKeyType(KeyType keyType) {
-        this.keyType = keyType;
+    public void setKeyUsage(KeyUsage keyUsage) {
+        this.keyUsage = keyUsage;
         // TODO Save.
     }
 
+    /**
+     * Condition filters.
+     */
     @XStreamAlias("where")
     private Condition condition;
 
@@ -49,6 +55,9 @@ public class ViewMetaData extends MetaData {
         // TODO Save.
     }
 
+    /**
+     * OrderBy items.
+     */
     @XStreamImplicit(itemFieldName = "orderBy")
     private ArrayList<OrderByItem> orderByItems; // TODO
 
@@ -76,8 +85,19 @@ public class ViewMetaData extends MetaData {
         // TODO Save.
     }
 
-    public boolean isMaterial() {
-        return false; // TODO
+    /**
+     * Joints. Used in data joining.
+     */
+    @XStreamImplicit(itemFieldName = "joint")
+    private ArrayList<ViewMetaDataColumn> joints;
+
+    public List<ViewMetaDataColumn> getJoints() {
+        return Collections.unmodifiableList(joints);
+    }
+
+    public void setJoints(ArrayList<ViewMetaDataColumn> joints) {
+        this.joints = joints;
+        // TODO Save.
     }
 
     public boolean isTemporary() {
@@ -107,7 +127,8 @@ public class ViewMetaData extends MetaData {
     /**
      * The meaning of the key of the intermediate result between a Map and Reduce job.
      */
-    public static enum KeyType {
+    public static enum KeyUsage {
+        NONE,
         ORDER,
         AGGREGATE,
         INNER_JOIN,

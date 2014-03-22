@@ -47,7 +47,7 @@ public class ViewMapReduce {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-            if (viewMetaData.getKeyType() == ViewMetaData.KeyType.ORDER) {
+            if (viewMetaData.getKeyUsage() == ViewMetaData.KeyUsage.ORDER) {
                 //
             }
         }
