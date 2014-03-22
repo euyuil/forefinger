@@ -20,32 +20,32 @@ public class TableMetaDataIndex {
     @XStreamConverter(TypeConverter.class)
     private Type type;
 
-    @XStreamImplicit(itemFieldName = "column")
-    private Column[] columns;
+    @XStreamImplicit
+    private IndexItem[] indexItems;
 
     public TableMetaDataIndex() {
     }
 
-    public TableMetaDataIndex(Type type, Column column) {
+    public TableMetaDataIndex(Type type, IndexItem indexItem) {
         this.type = type;
-        this.columns = new Column[] { column };
+        this.indexItems = new IndexItem[] {indexItem};
     }
 
     public TableMetaDataIndex(Type type, String column) {
         this.type = type;
-        this.columns = new Column[] { new Column(column) };
+        this.indexItems = new IndexItem[] { new IndexItem(column) };
     }
 
-    public TableMetaDataIndex(Type type, Column[] columns) {
+    public TableMetaDataIndex(Type type, IndexItem[] indexItems) {
         this.type = type;
-        this.columns = columns;
+        this.indexItems = indexItems;
     }
 
     public TableMetaDataIndex(Type type, String[] columns) {
         this.type = type;
-        this.columns = new Column[columns.length];
+        this.indexItems = new IndexItem[columns.length];
         for (int i = 0; i < columns.length; ++i)
-            this.columns[i] = new Column(columns[i]);
+            this.indexItems[i] = new IndexItem(columns[i]);
     }
 
     public Type getType() {
@@ -56,50 +56,50 @@ public class TableMetaDataIndex {
         this.type = type;
     }
 
-    public Column[] getColumns() {
-        return columns;
+    public IndexItem[] getIndexItems() {
+        return indexItems;
     }
 
-    public void setColumns(Column[] columns) {
-        this.columns = columns;
+    public void setIndexItems(IndexItem[] indexItems) {
+        this.indexItems = indexItems;
     }
 
     public static enum Type {
         PRIMARY, UNIQUE, INDEX, FULLTEXT
     }
 
-    @XStreamAlias("column")
-    public static class Column {
+    @XStreamAlias("item")
+    public static class IndexItem {
 
         @XStreamOmitField
         public final int DEFAULT_SIZE = 256;
 
         @XStreamAsAttribute
-        private String name;
+        private String column;
 
         @XStreamAsAttribute
         private int size;
 
-        public Column() {
+        public IndexItem() {
             this.size = DEFAULT_SIZE;
         }
 
-        public Column(String name) {
-            this.name = name;
+        public IndexItem(String column) {
+            this.column = column;
             this.size = DEFAULT_SIZE;
         }
 
-        public Column(String name, int size) {
-            this.name = name;
+        public IndexItem(String column, int size) {
+            this.column = column;
             this.size = size;
         }
 
-        public String getName() {
-            return name;
+        public String getColumn() {
+            return column;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setColumn(String column) {
+            this.column = column;
         }
 
         public int getSize() {

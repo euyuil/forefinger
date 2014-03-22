@@ -1,17 +1,19 @@
 package com.euyuil.forefinger.meta;
 
-import com.euyuil.forefinger.Configuration;
+import com.euyuil.forefinger.ForefingerConfig;
 import com.thoughtworks.xstream.XStream;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Represents the set of all the meta data, according to the
- * configuration.
+ * forefingerConfig.
  *
  * @author Liu Yue
  * @version 0.0.2014.03.06
@@ -32,7 +34,7 @@ public class MetaDataSet {
         return metaDataDir;
     }
 
-    private Configuration configuration;
+    private ForefingerConfig forefingerConfig;
     private String metaDataDir;
     private String indexDir;
 
@@ -40,107 +42,127 @@ public class MetaDataSet {
             new HashMap<String, MetaData>();
 
     private MetaDataSet() {
-        this.initialize(Configuration.getDefault());
+        this.initialize(ForefingerConfig.getDefault());
     }
 
-    public MetaDataSet(Configuration configuration) {
-        this.initialize(configuration);
+    public MetaDataSet(ForefingerConfig forefingerConfig) {
+        this.initialize(forefingerConfig);
     }
 
-    private void initialize(Configuration configuration) {
+    private void initialize(ForefingerConfig forefingerConfig) {
 
-        this.configuration = configuration;
+        this.forefingerConfig = forefingerConfig;
 
-        if (configuration.getMetaDataReplication() ==
-                Configuration.Replication.HADOOP_FILE_SYSTEM) {
-            this.metaDataDir = configuration.getHdfsHomePath() + "/meta";
-        } else if (configuration.getMetaDataReplication() ==
-                Configuration.Replication.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
-            this.metaDataDir = configuration.getEnvironment().getHomePath() + File.separator + "meta";
+        if (forefingerConfig.getMetaDataReplicationLevel() ==
+                ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
+            this.metaDataDir = forefingerConfig.getHdfsHomePath() + "/meta";
+        } else if (forefingerConfig.getMetaDataReplicationLevel() ==
+                ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
+            this.metaDataDir = forefingerConfig.getEnvironment().getHomePath() + File.separator + "meta";
             // TODO
-        } else if (configuration.getMetaDataReplication() ==
-                Configuration.Replication.LOCAL_FILE_SYSTEM_ON_NAME_NODE) {
+        } else if (forefingerConfig.getMetaDataReplicationLevel() ==
+                ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_NAME_NODE) {
             // TODO
         }
 
-        if (configuration.getIndexReplication() ==
-                Configuration.Replication.HADOOP_FILE_SYSTEM) {
-            this.metaDataDir = configuration.getHdfsHomePath() + "/index";
-        } else if (configuration.getMetaDataReplication() ==
-                Configuration.Replication.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
-            this.metaDataDir = configuration.getEnvironment().getHomePath() + File.separator + "index";
+        if (forefingerConfig.getIndexDataReplicationLevel() ==
+                ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
+            this.indexDir = forefingerConfig.getHdfsHomePath() + "/index";
+        } else if (forefingerConfig.getMetaDataReplicationLevel() ==
+                ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
+            this.indexDir = forefingerConfig.getEnvironment().getHomePath() + File.separator + "index";
             // TODO
-        } else if (configuration.getMetaDataReplication() ==
-                Configuration.Replication.LOCAL_FILE_SYSTEM_ON_NAME_NODE) {
+        } else if (forefingerConfig.getMetaDataReplicationLevel() ==
+                ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_NAME_NODE) {
             // TODO
         }
     }
 
-    private InputStream getInputStream(String path, Configuration.Replication replication) {
+    private InputStream getInputStream(String path, ForefingerConfig.ReplicationLevel replicationLevel) {
         try {
-            if (replication == Configuration.Replication.HADOOP_FILE_SYSTEM) {
+            if (replicationLevel == ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
                 FileSystem fileSystem = FileSystem.get(new org.apache.hadoop.conf.Configuration());
                 if (fileSystem == null)
                     return null;
                 return fileSystem.open(new Path(path));
-            } else if (replication == Configuration.Replication.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
+            } else if (replicationLevel == ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
                 File file = new File(path);
                 if (!file.exists() || !file.isFile())
                     return null;
                 return new FileInputStream(path);
             }
         } catch (IOException ioe) {
+            return null;
         }
         return null;
     }
 
-    private OutputStream getOutputStream(String path, Configuration.Replication replication) {
+    private String readAsString(String path, ForefingerConfig.ReplicationLevel replicationLevel) {
+        InputStream inputStream = getInputStream(path, replicationLevel);
+        Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+        return scanner.hasNext() ? scanner.next() : "";
+    }
+
+    private OutputStream getOutputStream(String path, ForefingerConfig.ReplicationLevel replicationLevel) {
         try {
-            if (replication == Configuration.Replication.HADOOP_FILE_SYSTEM) {
-                FileSystem fileSystem = FileSystem.get(new org.apache.hadoop.conf.Configuration());
+            if (replicationLevel == ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
+                FileSystem fileSystem = FileSystem.get(new Configuration());
                 if (fileSystem == null)
                     return null;
                 return fileSystem.create(new Path(path));
-            } else if (replication == Configuration.Replication.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
+            } else if (replicationLevel == ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
                 return new FileOutputStream(path);
             }
         } catch (IOException ioe) {
+            return null;
         }
         return null;
     }
 
     public MetaData getMetaData(String dataName) {
-        if (metaDataMap.containsKey(dataName))
-            return metaDataMap.get(dataName);
-        String metaDataPath = metaDataDir + File.separator + dataName + ".xml";
-        InputStream metaDataInputStream = getInputStream(metaDataPath, configuration.getMetaDataReplication());
-        if (metaDataInputStream == null)
-            return null;
-        XStream xStream = new XStream();
-        xStream.processAnnotations(new Class[] {
-                TableMetaData.class,
-                ViewMetaData.class,
-        });
-        MetaData metaData = (MetaData) xStream.fromXML(metaDataInputStream);
-        metaDataMap.put(dataName, metaData);
-        try {
-            metaDataInputStream.close();
-        } catch (IOException ioe) {
+        return getMetaData(dataName, true);
+    }
+
+    public MetaData getMetaData(String dataName, boolean useCache) {
+
+        if (useCache) {
+            if (metaDataMap.containsKey(dataName))
+                return metaDataMap.get(dataName);
         }
+
+        String metaDataPath = metaDataDir + File.separator + dataName + ".xml";
+        String metaDataString = readAsString(metaDataPath, forefingerConfig.getMetaDataReplicationLevel()).trim();
+        String metaDataType = metaDataString.substring(1, metaDataString.indexOf(' '));
+
+        XStream xmlSerDe;
+        if (metaDataType.equalsIgnoreCase("table"))
+            xmlSerDe = TableMetaData.getXmlSerDe();
+        else if (metaDataType.equalsIgnoreCase("view"))
+            xmlSerDe = ViewMetaData.getXmlSerDe();
+        else
+            return null;
+
+        MetaData metaData = (MetaData) xmlSerDe.fromXML(metaDataString);
+        metaDataMap.put(dataName, metaData);
+
         return metaData;
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends MetaData> T getMetaData(String dataName, Class<T> clazz) {
-        MetaData result = getMetaData(dataName);
-        if (result.getClass().equals(clazz))
-            return (T) result;
+        return getMetaData(dataName, clazz, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends MetaData> T getMetaData(String dataName, Class<T> clazz, boolean useCache) {
+        MetaData metaData = getMetaData(dataName, useCache);
+        if (metaData.getClass().equals(clazz))
+            return (T) metaData;
         return null;
     }
 
     public void putMetaData(MetaData data) throws IOException {
         String metaDataPath = metaDataDir + File.separator + data.getName() + ".xml";
-        OutputStream metaDataOutputStream = getOutputStream(metaDataPath, configuration.getMetaDataReplication());
+        OutputStream metaDataOutputStream = getOutputStream(metaDataPath, forefingerConfig.getMetaDataReplicationLevel());
         data.toXmlStream(metaDataOutputStream);
         metaDataMap.put(data.getName(), data);
     }

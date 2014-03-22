@@ -38,17 +38,17 @@ public class TableMetaData extends MetaData {
     }
 
     /**
-     * The paths of the table data sets.
+     * The sources of the table data sets.
      */
-    @XStreamImplicit(itemFieldName = "path")
-    private ArrayList<String> paths;
+    @XStreamImplicit(itemFieldName = "source")
+    private ArrayList<String> sources;
 
-    public List<String> getPaths() {
-        return Collections.unmodifiableList(paths);
+    public List<String> getSources() {
+        return Collections.unmodifiableList(sources);
     }
 
-    public void setPaths(ArrayList<String> paths) {
-        this.paths = paths;
+    public void setSources(ArrayList<String> sources) {
+        this.sources = sources;
         // TODO Do something to save meta data.
     }
 
@@ -64,20 +64,24 @@ public class TableMetaData extends MetaData {
      * @return the XML SerDe.
      */
     @Override
-    protected XStream getXmlSerDe() {
-        return xmlSerDe;
+    protected XStream getStaticXmlSerDe() {
+        return getXmlSerDe();
     }
 
-    static final XStream xmlSerDe = new XStream();
+    static XStream xmlSerDe;
 
-    static {
-        xmlSerDe.processAnnotations(new Class[]{
-                MetaData.class,
-                MetaDataColumn.class,
-                TableMetaData.class,
-                TableMetaDataColumn.class,
-                TableMetaDataIndex.class,
-        });
+    static XStream getXmlSerDe() {
+        if (xmlSerDe == null) {
+            xmlSerDe = new XStream();
+            xmlSerDe.processAnnotations(new Class[]{
+                    MetaData.class,
+                    MetaDataColumn.class,
+                    TableMetaData.class,
+                    TableMetaDataColumn.class,
+                    TableMetaDataIndex.class,
+            });
+        }
+        return xmlSerDe;
     }
 
     public static TableMetaData fromXml(String xml) {

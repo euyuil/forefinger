@@ -58,7 +58,7 @@ public abstract class MetaData {
     /**
      * The columns of the MetaData object.
      */
-    @XStreamImplicit(itemFieldName = "column")
+    @XStreamImplicit
     public ArrayList<MetaDataColumn> metaDataColumns;
 
     public List<MetaDataColumn> getMetaDataColumns() {
@@ -88,12 +88,13 @@ public abstract class MetaData {
 
     /**
      * Sub-classes should override this method to return its XML SerDe.
+     * Factory-method pattern.
      * @return the XML SerDe.
      */
-    protected abstract XStream getXmlSerDe();
+    protected abstract XStream getStaticXmlSerDe();
 
     public String toXml() {
-        return getXmlSerDe().toXML(this);
+        return getStaticXmlSerDe().toXML(this);
     }
 
     public void toXmlFile(File file) throws IOException {
@@ -102,7 +103,7 @@ public abstract class MetaData {
     }
 
     public void toXmlStream(OutputStream outputStream) throws IOException {
-        getXmlSerDe().toXML(this, outputStream);
+        getStaticXmlSerDe().toXML(this, outputStream);
         outputStream.flush();
         outputStream.close();
     }

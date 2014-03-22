@@ -22,6 +22,13 @@ public class TableMetaDataColumn extends MetaDataColumn {
         super(tableMetaData);
     }
 
+    public TableMetaDataColumn(TableMetaData tableMetaData, String columnName, Class type) {
+        super(tableMetaData);
+        this.name = columnName; // Do not use setters because it will save schema multiple times.
+        this.type = type; // Do not use setters because it will save schema multiple times.
+        // TODO Save schema.
+    }
+
     /**
      * The type of the table column.
      */
@@ -53,8 +60,7 @@ public class TableMetaDataColumn extends MetaDataColumn {
 
         @Override
         public Object fromString(String s) {
-            String typeName = s.substring(0, 1).toUpperCase() +
-                    s.substring(1).toLowerCase();
+            String typeName = s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
             String typeFullName = String.format("java.lang.%s", typeName);
             try {
                 return Class.forName(typeFullName);

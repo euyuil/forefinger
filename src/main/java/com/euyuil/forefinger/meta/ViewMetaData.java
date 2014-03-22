@@ -141,26 +141,30 @@ public class ViewMetaData extends MetaData {
      * @return the XML SerDe.
      */
     @Override
-    protected XStream getXmlSerDe() {
+    protected XStream getStaticXmlSerDe() {
+        return getXmlSerDe();
+    }
+
+    static XStream xmlSerDe;
+
+    static XStream getXmlSerDe() {
+        if (xmlSerDe == null) {
+            xmlSerDe = new XStream();
+            xmlSerDe.processAnnotations(new Class[]{
+                    MetaData.class,
+                    MetaDataColumn.class,
+                    ViewMetaData.class,
+                    ViewMetaDataColumn.class,
+            });
+        }
         return xmlSerDe;
     }
 
-    static final XStream xmlSerDe = new XStream();
-
-    static {
-        xmlSerDe.processAnnotations(new Class[]{
-                MetaData.class,
-                MetaDataColumn.class,
-                ViewMetaData.class,
-                ViewMetaDataColumn.class,
-        });
-    }
-
     public static ViewMetaData fromXml(String xml) {
-        return (ViewMetaData) xmlSerDe.fromXML(xml);
+        return (ViewMetaData) getXmlSerDe().fromXML(xml);
     }
 
     public static ViewMetaData fromXmlFile(File xmlFile) {
-        return (ViewMetaData) xmlSerDe.fromXML(xmlFile);
+        return (ViewMetaData) getXmlSerDe().fromXML(xmlFile);
     }
 }

@@ -28,4 +28,9 @@ public abstract class Condition implements Expression {
     public NotCondition negate() {
         return new NotCondition(this);
     }
+
+    @Override
+    public Class getResultType() {
+        return Boolean.class;
+    }
 }
