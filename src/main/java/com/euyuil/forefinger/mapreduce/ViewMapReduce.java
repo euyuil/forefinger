@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
+import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.meta.ViewMetaData;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -13,6 +14,8 @@ import java.io.IOException;
  */
 public class ViewMapReduce {
 
+    public static String PARAM_VIEW_NAME = "viewName";
+
     public static class ViewMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
         private ViewMetaData viewMetaData;
@@ -20,7 +23,8 @@ public class ViewMapReduce {
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
-            // TODO Read viewMetaData from job configuration.
+            String viewName = context.getConfiguration().get(PARAM_VIEW_NAME);
+            viewMetaData = MetaDataSet.getDefault().getMetaData(viewName, ViewMetaData.class);
         }
 
         @Override
