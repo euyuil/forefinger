@@ -1,7 +1,7 @@
 package com.euyuil.forefinger.mapreduce;
 
 import com.euyuil.forefinger.meta.condition.Condition;
-import com.euyuil.forefinger.DataRow;
+import com.euyuil.forefinger.serde.DataRow;
 import com.euyuil.forefinger.serde.DataSerDe;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;

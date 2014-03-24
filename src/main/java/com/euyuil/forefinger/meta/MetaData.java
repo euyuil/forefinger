@@ -74,11 +74,20 @@ public abstract class MetaData {
         // TODO Maybe copying is better.
     }
 
-    public MetaDataColumn getMetaDataColumn(String columnName) {
-        for (MetaDataColumn metaDataColumn : metaDataColumns)
+    public int getMetaDataColumnIndex(String columnName) {
+        for (int i = 0; i < metaDataColumns.size(); i++) {
+            MetaDataColumn metaDataColumn = metaDataColumns.get(i);
             if (metaDataColumn.getName().equalsIgnoreCase(columnName))
-                return metaDataColumn;
-        return null;
+                return i;
+        }
+        return -1;
+    }
+
+    public MetaDataColumn getMetaDataColumn(String columnName) {
+        int ret = getMetaDataColumnIndex(columnName);
+        if (ret < 0)
+            return null;
+        return metaDataColumns.get(ret);
     }
 
     /**

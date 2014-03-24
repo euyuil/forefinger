@@ -143,6 +143,8 @@ public class MetaDataSet {
         MetaData metaData = (MetaData) xmlSerDe.fromXML(metaDataString);
         metaDataMap.put(dataName, metaData);
 
+        metaData.setMetaDataSet(this);
+
         return metaData;
     }
 

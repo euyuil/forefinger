@@ -1,7 +1,7 @@
 package com.euyuil.forefinger.meta.condition;
 
 import com.euyuil.forefinger.meta.MetaDataColumn;
-import com.euyuil.forefinger.DataRow;
+import com.euyuil.forefinger.serde.DataRow;
 
 /**
  * @author Liu Yue

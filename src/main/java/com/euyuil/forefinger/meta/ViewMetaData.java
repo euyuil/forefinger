@@ -191,6 +191,9 @@ public class ViewMetaData extends MetaData {
 
     @Override
     public Deserializer getDeserializer() {
+        MetaData source = getSource();
+        if (source != null)
+            return source.getDeserializer();
         return csvDataSerDe;
     }
 

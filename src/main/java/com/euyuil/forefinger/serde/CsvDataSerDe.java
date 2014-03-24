@@ -1,7 +1,5 @@
 package com.euyuil.forefinger.serde;
 
-import com.euyuil.forefinger.DataRow;
-
 /**
  * Not only comma separated values. It's characters separated values.
  * The default SerDe for views.

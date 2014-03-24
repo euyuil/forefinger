@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.meta.condition;
 
-import com.euyuil.forefinger.DataRow;
+import com.euyuil.forefinger.serde.DataRow;
 import com.euyuil.forefinger.meta.Expression;
 
 /**
