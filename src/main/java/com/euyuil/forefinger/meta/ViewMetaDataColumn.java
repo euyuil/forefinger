@@ -2,6 +2,7 @@ package com.euyuil.forefinger.meta;
 
 import com.euyuil.forefinger.meta.function.Function;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 /**
  * ViewMetaData projection with convert functions.
@@ -14,6 +15,17 @@ public class ViewMetaDataColumn extends MetaDataColumn {
 
     public ViewMetaDataColumn(ViewMetaData viewMetaData) {
         super(viewMetaData);
+    }
+
+    public ViewMetaDataColumn(ViewMetaData viewMetaData, String name, String sourceColumnName) {
+        super(viewMetaData, name);
+        setSourceColumnName(sourceColumnName);
+    }
+
+    public ViewMetaDataColumn(ViewMetaData viewMetaData, String name, String sourceColumnName, Function function) {
+        super(viewMetaData, name);
+        setSourceColumnName(sourceColumnName);
+        setFunction(function);
     }
 
     /**
@@ -32,42 +44,29 @@ public class ViewMetaDataColumn extends MetaDataColumn {
         // TODO Save schema or something.
     }
 
-    /**
-     * The name of the referenced data, could be name of a table or view.
-     */
-    @XStreamAlias("data")
-    private String referenceMetaDataName;
+    @XStreamAsAttribute
+    @XStreamAlias("source")
+    private String sourceColumnName;
 
-    public MetaData getReferenceMetaData() {
-        return getMetaDataSet().getMetaData(referenceMetaDataName);
+    public String getSourceColumnName() {
+        return sourceColumnName;
     }
 
-    public void setReferenceMetaData(MetaData metaData) {
-        referenceMetaDataName = metaData.getName();
-        // TODO Some invalidation job.
+    public void setSourceColumnName(String sourceColumnName) {
+        this.sourceColumnName = sourceColumnName;
     }
 
     /**
-     * The name of the column of the referenced data.
+     * @return the ViewMetaData of this column.
      */
-    @XStreamAlias("column")
-    private String referenceMetaDataColumnName;
-
-    public MetaDataColumn getReferenceMetaDataColumn() {
-        return getReferenceMetaData().getMetaDataColumn(referenceMetaDataColumnName);
-    }
-
-    public void setReferenceMetaDataColumn(MetaDataColumn metaDataColumn) {
-        // Do not use setReferenceMetaData because it will invalidate this and we don't need to do twice.
-        referenceMetaDataName = metaDataColumn.getMetaData().getName();
-        referenceMetaDataColumnName = metaDataColumn.getName();
-        // TODO Some invalidation job.
+    public ViewMetaData getViewMetaData() {
+        return (ViewMetaData) getMetaData();
     }
 
     @Override
     public Class getResultType() {
         if (function == null) {
-            return getReferenceMetaDataColumn().getResultType();
+            return getViewMetaData().getSource().getMetaDataColumn(getSourceColumnName()).getResultType();
         } else {
             return function.getResultType();
         }

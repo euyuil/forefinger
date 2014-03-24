@@ -6,7 +6,9 @@ import com.euyuil.forefinger.serde.Deserializer;
 import com.euyuil.forefinger.serde.Serializer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class ViewMetaData extends MetaData {
     /**
      * What's the key used for? The key is for data transportation between Map and Reduce job.
      */
+    @XStreamAsAttribute
     @XStreamAlias("usage")
     private KeyUsage keyUsage;
 
@@ -41,6 +44,44 @@ public class ViewMetaData extends MetaData {
     public void setKeyUsage(KeyUsage keyUsage) {
         this.keyUsage = keyUsage;
         // TODO Save.
+    }
+
+    /**
+     * The name of the referenced data, could be name of a table or view.
+     * A view could have multiple sources, but they should have the same schema.
+     * TODO Check if the schemas are the same.
+     */
+    @XStreamImplicit(itemFieldName = "from")
+    private ArrayList<String> sources;
+
+    @XStreamOmitField
+    private ArrayList<MetaData> sourcesCache;
+
+    public List<MetaData> getSources() {
+        if (sources != null && sourcesCache == null)
+            invalidateSourcesCache();
+        return sourcesCache;
+    }
+
+    public MetaData getSource() {
+        return getSources().get(0);
+    }
+
+    public void setSources(List<MetaData> sources) {
+        // This should not be deep copy, but shallow copy. It's desired behavior.
+        sourcesCache = new ArrayList<MetaData>(sources);
+        this.sources = new ArrayList<String>(sources.size());
+        for (MetaData source : sourcesCache)
+            this.sources.add(source.getName());
+        // TODO Some invalidation job.
+    }
+
+    private void invalidateSourcesCache() {
+        ArrayList<MetaData> newSourcesCache = new ArrayList<MetaData>(sources.size());
+        for (String source : sources) {
+            newSourcesCache.add(getMetaDataSet().getMetaData(source));
+        }
+        sourcesCache = newSourcesCache;
     }
 
     /**
@@ -140,6 +181,7 @@ public class ViewMetaData extends MetaData {
         FULL_OUTER_JOIN
     }
 
+    @XStreamOmitField
     private CsvDataSerDe csvDataSerDe = new CsvDataSerDe();
 
     @Override

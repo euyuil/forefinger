@@ -1,7 +1,9 @@
 package com.euyuil.forefinger.meta;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
 
 /**
  * @author Liu Yue
@@ -15,6 +17,16 @@ public abstract class MetaDataColumn implements Expression {
      */
     public MetaDataColumn(MetaData metaData) {
         this.metaData = metaData;
+    }
+
+    /**
+     * Constructs a MetaDataColumn object specifying MetaData object and type.
+     * @param metaData the MetaData object.
+     * @param type the type.
+     */
+    public MetaDataColumn(MetaData metaData, String name) {
+        this.metaData = metaData;
+        this.name = name;
     }
 
     /**
@@ -51,11 +63,4 @@ public abstract class MetaDataColumn implements Expression {
     public MetaDataSet getMetaDataSet() {
         return getMetaData().getMetaDataSet();
     }
-
-    /**
-     * Sub-classes should override this method to return the resulting type of the column.
-     * @return the resulting type of the column.
-     */
-    @Override
-    public abstract Class getResultType();
 }

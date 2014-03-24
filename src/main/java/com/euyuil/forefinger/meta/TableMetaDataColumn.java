@@ -23,14 +23,12 @@ public class TableMetaDataColumn extends MetaDataColumn {
     }
 
     public TableMetaDataColumn(TableMetaData tableMetaData, String columnName, Class type) {
-        super(tableMetaData);
-        this.name = columnName; // Do not use setters because it will save schema multiple times.
-        this.type = type; // Do not use setters because it will save schema multiple times.
-        // TODO Save schema.
+        super(tableMetaData, columnName);
+        setResultType(type);
     }
 
     /**
-     * The type of the table column.
+     * The type of the column.
      */
     @XStreamAsAttribute
     @XStreamConverter(TypeConverter.class)

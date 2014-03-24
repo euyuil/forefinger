@@ -47,6 +47,26 @@ public class MetaDataSetTest {
         return table;
     }
 
+    private ViewMetaData generateViewMetaData() {
+
+        ViewMetaData view = new ViewMetaData(metaDataSet);
+
+        view.setName("userView");
+
+        view.setKeyUsage(ViewMetaData.KeyUsage.NONE);
+
+        view.setSources(new ArrayList<MetaData>(Arrays.asList(
+                metaDataSet.getMetaData("user")
+        )));
+
+        view.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
+                new ViewMetaDataColumn(view, "userName", "name"),
+                new ViewMetaDataColumn(view, "userAge", "age")
+        )));
+
+        return view;
+    }
+
     @Before
     public void setUp() throws Exception {
         config = new ForefingerConfig(Environment.getDefault());
@@ -72,7 +92,20 @@ public class MetaDataSetTest {
     }
 
     @Test
-    public void testMetaDataSetPutAndGet() throws Exception {
+    public void testViewMetaDataSerDe() throws Exception {
+
+        ViewMetaData view = generateViewMetaData();
+
+        String xml = view.toXml();
+        ViewMetaData sameView = ViewMetaData.fromXml(xml);
+        String sameXml = sameView.toXml();
+
+        assert xml.trim().length() > 0;
+        assert xml.equals(sameXml);
+    }
+
+    @Test
+    public void testMetaDataSetPutAndGetTable() throws Exception {
 
         TableMetaData table = generateTableMetaData();
 
@@ -84,6 +117,23 @@ public class MetaDataSetTest {
 
         String xml = table.toXml();
         String sameXml = sameTable.toXml();
+
+        assert xml.equals(sameXml);
+    }
+
+    @Test
+    public void testMetaDataSetPutAndGetView() throws Exception {
+
+        ViewMetaData view = generateViewMetaData();
+
+        metaDataSet.putMetaData(view);
+
+        ViewMetaData sameView = metaDataSet.getMetaData("userView", ViewMetaData.class, false);
+
+        assert sameView != null;
+
+        String xml = view.toXml();
+        String sameXml = sameView.toXml();
 
         assert xml.equals(sameXml);
     }
