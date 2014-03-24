@@ -1,5 +1,8 @@
 package com.euyuil.forefinger.meta;
 
+import com.euyuil.forefinger.serde.DataSerDe;
+import com.euyuil.forefinger.serde.Deserializer;
+import com.euyuil.forefinger.serde.Serializer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -21,6 +24,30 @@ import java.util.List;
  */
 @XStreamAlias("table")
 public class TableMetaData extends MetaData {
+
+    /**
+     * The serializer and deserializer of the table.
+     */
+    @XStreamAlias("serde")
+    private DataSerDe serDe;
+
+    public DataSerDe getSerDe() {
+        return serDe;
+    }
+
+    public void setSerDe(DataSerDe serDe) {
+        this.serDe = serDe;
+    }
+
+    @Override
+    public Serializer getSerializer() {
+        return serDe;
+    }
+
+    @Override
+    public Deserializer getDeserializer() {
+        return serDe;
+    }
 
     /**
      * The indices of the table data.

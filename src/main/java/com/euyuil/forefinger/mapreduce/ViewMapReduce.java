@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
+import com.euyuil.forefinger.DataRow;
 import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.meta.ViewMetaData;
 import org.apache.hadoop.io.LongWritable;
@@ -18,6 +19,9 @@ public class ViewMapReduce {
 
     public static class ViewMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
+        private Text text = new Text();
+        private CompositeWritable compositeWritable;
+
         private ViewMetaData viewMetaData;
 
         @Override
@@ -30,8 +34,9 @@ public class ViewMapReduce {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-            if (viewMetaData.getKeyUsage() == ViewMetaData.KeyUsage.ORDER) {
-                //
+            if (viewMetaData.getKeyUsage() == ViewMetaData.KeyUsage.NONE) {
+                DataRow dataRow = viewMetaData.getDeserializer().deserialize(value.toString());
+
             }
         }
 

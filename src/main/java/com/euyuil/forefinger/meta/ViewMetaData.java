@@ -1,6 +1,9 @@
 package com.euyuil.forefinger.meta;
 
 import com.euyuil.forefinger.meta.condition.Condition;
+import com.euyuil.forefinger.serde.CsvDataSerDe;
+import com.euyuil.forefinger.serde.Deserializer;
+import com.euyuil.forefinger.serde.Serializer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -135,6 +138,18 @@ public class ViewMetaData extends MetaData {
         LEFT_OUTER_JOIN,
         RIGHT_OUTER_JOIN,
         FULL_OUTER_JOIN
+    }
+
+    private CsvDataSerDe csvDataSerDe = new CsvDataSerDe();
+
+    @Override
+    public Serializer getSerializer() {
+        return csvDataSerDe;
+    }
+
+    @Override
+    public Deserializer getDeserializer() {
+        return csvDataSerDe;
     }
 
     /**

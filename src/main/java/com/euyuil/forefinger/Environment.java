@@ -1,5 +1,7 @@
 package com.euyuil.forefinger;
 
+import java.io.File;
+
 /**
  * The Environment object for the Forefinger system.
  * Users could call Environment.getDefault() to obtain the default
@@ -59,11 +61,18 @@ public class Environment {
      * @param homePath the path to the Forefinger home.
      */
     private void initialize(String homePath) {
-        if (homePath == null)
-            throw new IllegalArgumentException("Cannot set home path to null. " +
-                    "Please check your arguments for the constructor of class " +
-                    "Environment, or the environment variable FOREFINGER_HOME " +
-                    "in your operating system.");
+        if (homePath == null) {
+            if (File.separator.equals("/"))
+                homePath = "/opt/forefinger";
+            else if (File.separator.equals("\\"))
+                homePath = "C:\\Forefinger";
+            else
+                throw new IllegalArgumentException("Cannot set home path to null. " +
+                        "Please check your arguments for the constructor of class " +
+                        "Environment, or the environment variable FOREFINGER_HOME " +
+                        "in your operating system.");
+        }
+        new File(homePath).mkdirs();
         this.homePath = homePath;
     }
 }

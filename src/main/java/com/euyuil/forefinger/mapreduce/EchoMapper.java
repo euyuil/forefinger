@@ -1,7 +1,7 @@
 package com.euyuil.forefinger.mapreduce;
 
 import com.euyuil.forefinger.DataRow;
-import com.euyuil.forefinger.serde.RowSerDe;
+import com.euyuil.forefinger.serde.DataSerDe;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -17,15 +17,15 @@ import java.io.IOException;
 public class EchoMapper extends
         Mapper<LongWritable, Text, LongWritable, Text> {
 
-    private RowSerDe rowSerDe;
+    private DataSerDe dataSerDe;
     private Text serialized = new Text();
 
     @Override
     protected void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
         String line = value.toString();
-        DataRow dataRow = rowSerDe.deserialize(line);
-        serialized.set(rowSerDe.serialize(dataRow));
+        DataRow dataRow = dataSerDe.deserialize(line);
+        serialized.set(dataSerDe.serialize(dataRow));
         context.write(key, serialized);
     }
 }

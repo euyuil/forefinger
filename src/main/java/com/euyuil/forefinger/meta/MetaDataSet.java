@@ -28,12 +28,6 @@ public class MetaDataSet {
         return metaDataSet;
     }
 
-    private static String createMetaDataDir(String homePath) {
-        String metaDataDir = homePath + File.separator + "meta";
-        new File(metaDataDir).mkdirs();
-        return metaDataDir;
-    }
-
     private ForefingerConfig forefingerConfig;
     private String metaDataDir;
     private String indexDir;
@@ -56,9 +50,11 @@ public class MetaDataSet {
         if (forefingerConfig.getMetaDataReplicationLevel() ==
                 ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
             this.metaDataDir = forefingerConfig.getHdfsHomePath() + "/meta";
+            // TODO Create dir.
         } else if (forefingerConfig.getMetaDataReplicationLevel() ==
                 ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
             this.metaDataDir = forefingerConfig.getEnvironment().getHomePath() + File.separator + "meta";
+            new File(this.metaDataDir).mkdirs();
             // TODO
         } else if (forefingerConfig.getMetaDataReplicationLevel() ==
                 ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_NAME_NODE) {
@@ -68,9 +64,11 @@ public class MetaDataSet {
         if (forefingerConfig.getIndexDataReplicationLevel() ==
                 ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
             this.indexDir = forefingerConfig.getHdfsHomePath() + "/index";
+            // TODO Create dir.
         } else if (forefingerConfig.getMetaDataReplicationLevel() ==
                 ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
             this.indexDir = forefingerConfig.getEnvironment().getHomePath() + File.separator + "index";
+            new File(this.indexDir).mkdirs();
             // TODO
         } else if (forefingerConfig.getMetaDataReplicationLevel() ==
                 ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_NAME_NODE) {

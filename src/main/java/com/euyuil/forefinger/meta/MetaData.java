@@ -1,5 +1,8 @@
 package com.euyuil.forefinger.meta;
 
+import com.euyuil.forefinger.serde.DataSerDe;
+import com.euyuil.forefinger.serde.Deserializer;
+import com.euyuil.forefinger.serde.Serializer;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -77,6 +80,16 @@ public abstract class MetaData {
                 return metaDataColumn;
         return null;
     }
+
+    /**
+     * @return the serializer of the data.
+     */
+    public abstract Serializer getSerializer();
+
+    /**
+     * @return the deserializer of the data.
+     */
+    public abstract Deserializer getDeserializer();
 
     @SuppressWarnings("unchecked")
     public <T extends MetaDataColumn> T getMetaDataColumn(String columnName, Class<T> clazz) {

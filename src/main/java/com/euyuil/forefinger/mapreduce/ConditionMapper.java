@@ -2,7 +2,7 @@ package com.euyuil.forefinger.mapreduce;
 
 import com.euyuil.forefinger.meta.condition.Condition;
 import com.euyuil.forefinger.DataRow;
-import com.euyuil.forefinger.serde.RowSerDe;
+import com.euyuil.forefinger.serde.DataSerDe;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class ConditionMapper extends
         Mapper<LongWritable, Text, LongWritable, Text> {
 
-    private RowSerDe rowSerDe;
+    private DataSerDe dataSerDe;
     private Text serialized = new Text();
     private Condition condition;
 
@@ -24,9 +24,9 @@ public class ConditionMapper extends
     protected void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
         String line = value.toString();
-        DataRow dataRow = rowSerDe.deserialize(line);
+        DataRow dataRow = dataSerDe.deserialize(line);
         if (condition.fulfilled(dataRow)) {
-            serialized.set(rowSerDe.serialize(dataRow));
+            serialized.set(dataSerDe.serialize(dataRow));
             context.write(key, serialized);
         }
     }
