@@ -19,7 +19,9 @@ import java.util.List;
  */
 public class ViewMapReduce {
 
-    public static String PARAM_VIEW_NAME = "viewName";
+    public static final String PARAM_VIEW_NAME = "viewName";
+    public static final String PARAM_SERIALIZER = "serializer";
+    public static final String PARAM_DESERIALIZER = "deserializer";
 
     public static class ViewMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
