@@ -7,8 +7,10 @@ import com.euyuil.forefinger.serde.DataRow;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.euyuil.forefinger.serde.Serializer;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 import java.util.List;
@@ -78,6 +80,53 @@ public class ViewMapReduce {
                 String serialized = viewMetaDataSerializer.serialize(writeDataRow);
                 text.set(serialized);
                 context.write(key, text);
+            }
+        }
+
+        @Override
+        protected void cleanup(Context context) throws IOException, InterruptedException {
+            super.cleanup(context);
+        }
+    }
+
+    public static class ViewReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
+
+        private Text text = new Text();
+        private CompositeWritable compositeWritable;
+
+        private MetaData viewMetaDataSource;
+        private List<MetaDataColumn> viewMetaDataSourceColumns;
+
+        private ViewMetaData viewMetaData;
+        private ViewMetaData.KeyUsage viewMetaDataKeyUsage;
+        private Serializer viewMetaDataSerializer;
+        private Deserializer viewMetaDataDeserializer;
+        private Condition viewMetaDataCondition;
+        private List<MetaDataColumn> viewMetaDataColumns;
+
+        @Override
+        protected void setup(Context context) throws IOException, InterruptedException {
+            super.setup(context);
+
+            String viewName = context.getConfiguration().get(PARAM_VIEW_NAME);
+            viewMetaData = MetaDataSet.getDefault().getMetaData(viewName, ViewMetaData.class);
+
+            viewMetaDataSource = viewMetaData.getSource();
+            viewMetaDataSourceColumns = viewMetaDataSource.getMetaDataColumns();
+
+            viewMetaDataKeyUsage = viewMetaData.getKeyUsage();
+            viewMetaDataSerializer = viewMetaData.getSerializer();
+            viewMetaDataDeserializer = viewMetaData.getDeserializer();
+            viewMetaDataCondition = viewMetaData.getCondition();
+            viewMetaDataColumns = viewMetaData.getMetaDataColumns();
+        }
+
+        @Override
+        protected void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+
+            if (viewMetaDataKeyUsage == ViewMetaData.KeyUsage.NONE) {
+                for (Text text : values) // TODO Use the serializer and deserializer.
+                    context.write(NullWritable.get(), text);
             }
         }
 
