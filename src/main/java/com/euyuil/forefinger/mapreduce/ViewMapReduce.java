@@ -59,6 +59,7 @@ public class ViewMapReduce {
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
             if (viewMetaDataKeyUsage == ViewMetaData.KeyUsage.NONE) {
+
                 DataRow dataRow = viewMetaDataDeserializer.deserialize(value.toString());
 
                 // Filter conditions.

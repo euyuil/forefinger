@@ -5,6 +5,8 @@ import com.euyuil.forefinger.meta.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -33,8 +35,7 @@ public class HelloForefinger {
         table.setName(TABLE_NAME);
 
         table.setSources(new ArrayList<String>(Arrays.asList(
-                "/opt/forefinger/user-000.txt",
-                "/opt/forefinger/user-001.txt"
+                "/opt/forefinger/user-in"
         )));
 
         table.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
@@ -81,10 +82,16 @@ public class HelloForefinger {
 
         try {
             FileSystem fileSystem = FileSystem.get(new Configuration());
-            OutputStream outputStream1 = fileSystem.create(new Path("/opt/forefinger/user-000.txt"));
-            OutputStream outputStream2 = fileSystem.create(new Path("/opt/forefinger/user-001.txt"));
-            new PrintWriter(outputStream1).print(rows1);
-            new PrintWriter(outputStream2).print(rows2);
+            OutputStream outputStream1 = fileSystem.create(new Path("/opt/forefinger/user-in/part-000.txt"));
+            OutputStream outputStream2 = fileSystem.create(new Path("/opt/forefinger/user-in/part-001.txt"));
+            PrintWriter printWriter1 = new PrintWriter(outputStream1);
+            PrintWriter printWriter2 = new PrintWriter(outputStream2);
+            printWriter1.print(rows1);
+            printWriter2.print(rows2);
+            printWriter1.flush();
+            printWriter2.flush();
+            printWriter1.close();
+            printWriter2.close();
             outputStream1.close();
             outputStream2.close();
         } catch (IOException e) {
@@ -120,12 +127,22 @@ public class HelloForefinger {
 
         Job job = new Job(configuration, "testJob");
 
+        job.setJarByClass(ViewMapReduce.class);
+
         job.setMapperClass(ViewMapReduce.ViewMapper.class);
+        job.setMapOutputKeyClass(LongWritable.class);
+        job.setMapOutputValueClass(Text.class);
+
+        job.setNumReduceTasks(0);
+
+        job.setOutputKeyClass(LongWritable.class);
+        job.setOutputValueClass(Text.class);
 
         for (String source : sourceMetaData.getSources())
             FileInputFormat.addInputPath(job, new Path(source));
 
-        FileOutputFormat.setOutputPath(job, new Path("/opt/forefinger/user-out.txt"));
+        FileSystem.get(configuration).delete(new Path("/opt/forefinger/user-out"), true);
+        FileOutputFormat.setOutputPath(job, new Path("/opt/forefinger/user-out"));
 
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }

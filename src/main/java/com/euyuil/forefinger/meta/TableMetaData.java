@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.meta;
 
+import com.euyuil.forefinger.serde.CsvDataSerDe;
 import com.euyuil.forefinger.serde.DataSerDe;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.euyuil.forefinger.serde.Serializer;
@@ -32,6 +33,10 @@ public class TableMetaData extends MetaData {
     private DataSerDe serDe;
 
     public DataSerDe getSerDe() {
+        if (serDe == null) {
+            serDe = new CsvDataSerDe();
+            serDe.setMetaData(this);
+        }
         return serDe;
     }
 
@@ -41,12 +46,12 @@ public class TableMetaData extends MetaData {
 
     @Override
     public Serializer getSerializer() {
-        return serDe;
+        return getSerDe();
     }
 
     @Override
     public Deserializer getDeserializer() {
-        return serDe;
+        return getSerDe();
     }
 
     /**

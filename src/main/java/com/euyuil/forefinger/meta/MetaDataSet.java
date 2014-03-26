@@ -101,20 +101,22 @@ public class MetaDataSet {
         return scanner.hasNext() ? scanner.next() : "";
     }
 
-    private OutputStream getOutputStream(String path, ForefingerConfig.ReplicationLevel replicationLevel) {
-        try {
-            if (replicationLevel == ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
-                FileSystem fileSystem = FileSystem.get(new Configuration());
-                if (fileSystem == null)
-                    return null;
-                return fileSystem.create(new Path(path));
-            } else if (replicationLevel == ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
-                return new FileOutputStream(path);
-            }
-        } catch (IOException ioe) {
-            return null;
+    private OutputStream getOutputStream(String path, ForefingerConfig.ReplicationLevel replicationLevel) throws IOException {
+
+        if (replicationLevel == ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
+
+            FileSystem fileSystem = FileSystem.get(new Configuration());
+
+            if (fileSystem == null)
+                throw new IOException("Cannot get HDFS file system object");
+
+            return fileSystem.create(new Path(path), true);
+
+        } else if (replicationLevel == ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
+            return new FileOutputStream(path);
         }
-        return null;
+
+        throw new IOException(String.format("The replication level %s is not supported", replicationLevel));
     }
 
     public MetaData getMetaData(String dataName) {
@@ -145,6 +147,9 @@ public class MetaDataSet {
 
         metaData.setMetaDataSet(this);
 
+        for (MetaDataColumn metaDataColumn : metaData.getMetaDataColumns())
+            metaDataColumn.setMetaData(metaData);
+
         return metaData;
     }
 
@@ -160,10 +165,16 @@ public class MetaDataSet {
         return null;
     }
 
-    public void putMetaData(MetaData data) throws IOException {
-        String metaDataPath = metaDataDir + File.separator + data.getName() + ".xml";
+    public void putMetaData(MetaData metaData) throws IOException {
+
+        if (metaData == null)
+            throw new NullPointerException("Cannot put null MetaData, thus parameter metaData cannot be null");
+
+        String metaDataPath = metaDataDir + File.separator + metaData.getName() + ".xml";
+
         OutputStream metaDataOutputStream = getOutputStream(metaDataPath, forefingerConfig.getMetaDataReplicationLevel());
-        data.toXmlStream(metaDataOutputStream);
-        metaDataMap.put(data.getName(), data);
+        metaData.toXmlStream(metaDataOutputStream);
+
+        metaDataMap.put(metaData.getName(), metaData);
     }
 }

@@ -182,19 +182,27 @@ public class ViewMetaData extends MetaData {
     }
 
     @XStreamOmitField
-    private CsvDataSerDe csvDataSerDe = new CsvDataSerDe();
+    private CsvDataSerDe csvDataSerDe;
+
+    private CsvDataSerDe ensureCsvDataSerDe() {
+        if (csvDataSerDe == null) {
+            csvDataSerDe = new CsvDataSerDe();
+            csvDataSerDe.setMetaData(this);
+        }
+        return csvDataSerDe;
+    }
 
     @Override
     public Serializer getSerializer() {
-        return csvDataSerDe;
+        return ensureCsvDataSerDe();
     }
 
     @Override
     public Deserializer getDeserializer() {
         MetaData source = getSource();
-        if (source != null)
+        if (source != null && source.getDeserializer() != null)
             return source.getDeserializer();
-        return csvDataSerDe;
+        return ensureCsvDataSerDe();
     }
 
     /**

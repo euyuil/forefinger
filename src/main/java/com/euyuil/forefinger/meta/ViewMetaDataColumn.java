@@ -65,8 +65,26 @@ public class ViewMetaDataColumn extends MetaDataColumn {
 
     @Override
     public Class getResultType() {
+
         if (function == null) {
-            return getViewMetaData().getSource().getMetaDataColumn(getSourceColumnName()).getResultType();
+
+            ViewMetaData viewMetaData = getViewMetaData();
+
+            if (viewMetaData == null)
+                throw new NullPointerException("Cannot find ViewMetaData of ViewMetaDataColumn");
+
+            MetaData sourceMetaData = viewMetaData.getSource();
+
+            if (sourceMetaData == null)
+                throw new NullPointerException("Cannot find sourceMetaData of ViewMetaData of ViewMetaDataColumn");
+
+            MetaDataColumn sourceMetaDataColumn = sourceMetaData.getMetaDataColumn(getSourceColumnName());
+
+            if (sourceMetaDataColumn == null)
+                throw new NullPointerException("Cannot find sourceMetaDataColumn of ViewMetaDataColumn");
+
+            return sourceMetaDataColumn.getResultType();
+
         } else {
             return function.getResultType();
         }
