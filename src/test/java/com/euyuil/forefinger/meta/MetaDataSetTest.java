@@ -53,7 +53,7 @@ public class MetaDataSetTest {
 
         view.setName("userView");
 
-        view.setKeyUsage(ViewMetaData.KeyUsage.NONE);
+        view.setKeyUsage(ViewMetaData.KeyUsage.SIMPLE);
 
         view.setSources(new ArrayList<MetaData>(Arrays.asList(
                 metaDataSet.getMetaData("user")

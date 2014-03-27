@@ -172,7 +172,7 @@ public class ViewMetaData extends MetaData {
      * The meaning of the key of the intermediate result between a Map and Reduce job.
      */
     public static enum KeyUsage {
-        NONE,
+        SIMPLE,
         ORDER,
         AGGREGATE,
         INNER_JOIN,

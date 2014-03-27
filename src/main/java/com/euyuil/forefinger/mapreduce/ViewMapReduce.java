@@ -1,13 +1,12 @@
 package com.euyuil.forefinger.mapreduce;
 
-import com.euyuil.forefinger.meta.*;
+import com.euyuil.forefinger.meta.MetaData;
+import com.euyuil.forefinger.meta.MetaDataColumn;
+import com.euyuil.forefinger.meta.MetaDataSet;
+import com.euyuil.forefinger.meta.ViewMetaData;
 import com.euyuil.forefinger.meta.condition.Condition;
-import com.euyuil.forefinger.serde.ArrayDataRow;
-import com.euyuil.forefinger.serde.DataRow;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.euyuil.forefinger.serde.Serializer;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -19,26 +18,27 @@ import java.util.List;
  * @author Liu Yue
  * @version 0.0.2014.03.19
  */
-public class ViewMapReduce {
+public abstract class ViewMapReduce {
 
     public static final String PARAM_VIEW_NAME = "viewName";
     public static final String PARAM_SERIALIZER = "serializer";
     public static final String PARAM_DESERIALIZER = "deserializer";
 
-    public static class ViewMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
+    public static abstract class ViewMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+            extends Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
-        private Text text = new Text();
-        private CompositeWritable compositeWritable;
+        protected Text text = new Text();
+        protected CompositeWritable compositeWritable;
 
-        private MetaData viewMetaDataSource;
-        private List<MetaDataColumn> viewMetaDataSourceColumns;
+        protected MetaData viewMetaDataSource;
+        protected List<MetaDataColumn> viewMetaDataSourceColumns;
 
-        private ViewMetaData viewMetaData;
-        private ViewMetaData.KeyUsage viewMetaDataKeyUsage;
-        private Serializer viewMetaDataSerializer;
-        private Deserializer viewMetaDataDeserializer;
-        private Condition viewMetaDataCondition;
-        private List<MetaDataColumn> viewMetaDataColumns;
+        protected ViewMetaData viewMetaData;
+        protected ViewMetaData.KeyUsage viewMetaDataKeyUsage;
+        protected Serializer viewMetaDataSerializer;
+        protected Deserializer viewMetaDataDeserializer;
+        protected Condition viewMetaDataCondition;
+        protected List<MetaDataColumn> viewMetaDataColumns;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
@@ -55,32 +55,6 @@ public class ViewMapReduce {
             viewMetaDataDeserializer = viewMetaData.getDeserializer();
             viewMetaDataCondition = viewMetaData.getCondition();
             viewMetaDataColumns = viewMetaData.getMetaDataColumns();
-        }
-
-        @Override
-        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-
-            if (viewMetaDataKeyUsage == ViewMetaData.KeyUsage.NONE) {
-
-                DataRow dataRow = viewMetaDataDeserializer.deserialize(value.toString());
-
-                // Filter conditions.
-                if (viewMetaDataCondition != null && !viewMetaDataCondition.fulfilled(dataRow))
-                    return;
-
-                // Projections.
-                ArrayDataRow writeDataRow = new ArrayDataRow(viewMetaData.getMetaDataColumns().size());
-                for (int columnIndex = 0; columnIndex < viewMetaDataColumns.size(); columnIndex++) {
-                    ViewMetaDataColumn column = (ViewMetaDataColumn) viewMetaDataColumns.get(columnIndex);
-                    int sourceColumnIndex = viewMetaDataSource.getMetaDataColumnIndex(column.getSourceColumnName());
-                    writeDataRow.set(columnIndex, dataRow.get(sourceColumnIndex));
-                }
-
-                // Write results.
-                String serialized = viewMetaDataSerializer.serialize(writeDataRow);
-                text.set(serialized);
-                context.write(key, text);
-            }
         }
 
         @Override
@@ -89,20 +63,21 @@ public class ViewMapReduce {
         }
     }
 
-    public static class ViewReducer extends Reducer<LongWritable, Text, NullWritable, Text> {
+    public static abstract class ViewReducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
+            extends Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
-        private Text text = new Text();
-        private CompositeWritable compositeWritable;
+        protected Text text = new Text();
+        protected CompositeWritable compositeWritable;
 
-        private MetaData viewMetaDataSource;
-        private List<MetaDataColumn> viewMetaDataSourceColumns;
+        protected MetaData viewMetaDataSource;
+        protected List<MetaDataColumn> viewMetaDataSourceColumns;
 
-        private ViewMetaData viewMetaData;
-        private ViewMetaData.KeyUsage viewMetaDataKeyUsage;
-        private Serializer viewMetaDataSerializer;
-        private Deserializer viewMetaDataDeserializer;
-        private Condition viewMetaDataCondition;
-        private List<MetaDataColumn> viewMetaDataColumns;
+        protected ViewMetaData viewMetaData;
+        protected ViewMetaData.KeyUsage viewMetaDataKeyUsage;
+        protected Serializer viewMetaDataSerializer;
+        protected Deserializer viewMetaDataDeserializer;
+        protected Condition viewMetaDataCondition;
+        protected List<MetaDataColumn> viewMetaDataColumns;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
@@ -119,15 +94,6 @@ public class ViewMapReduce {
             viewMetaDataDeserializer = viewMetaData.getDeserializer();
             viewMetaDataCondition = viewMetaData.getCondition();
             viewMetaDataColumns = viewMetaData.getMetaDataColumns();
-        }
-
-        @Override
-        protected void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-
-            if (viewMetaDataKeyUsage == ViewMetaData.KeyUsage.NONE) {
-                for (Text text : values) // TODO Use the serializer and deserializer.
-                    context.write(NullWritable.get(), text);
-            }
         }
 
         @Override

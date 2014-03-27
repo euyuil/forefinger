@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.example;
 
+import com.euyuil.forefinger.mapreduce.SimpleViewMapReduce;
 import com.euyuil.forefinger.mapreduce.ViewMapReduce;
 import com.euyuil.forefinger.meta.*;
 import org.apache.hadoop.conf.Configuration;
@@ -62,7 +63,7 @@ public class HelloForefinger {
 
         view.setName(VIEW_NAME);
 
-        view.setKeyUsage(ViewMetaData.KeyUsage.NONE);
+        view.setKeyUsage(ViewMetaData.KeyUsage.SIMPLE);
 
         view.setSources(new ArrayList<MetaData>(Arrays.asList(
                 metaDataSet.getMetaData(TABLE_NAME)
@@ -130,11 +131,11 @@ public class HelloForefinger {
 
         job.setJarByClass(ViewMapReduce.class);
 
-        job.setMapperClass(ViewMapReduce.ViewMapper.class);
+        job.setMapperClass(SimpleViewMapReduce.ViewMapper.class);
         job.setMapOutputKeyClass(LongWritable.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setReducerClass(ViewMapReduce.ViewReducer.class);
+        job.setReducerClass(SimpleViewMapReduce.ViewReducer.class);
 
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
