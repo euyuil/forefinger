@@ -1,11 +1,11 @@
 package com.euyuil.forefinger.mapreduce;
 
+import com.euyuil.forefinger.meta.ViewMetaData;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Reused between multiple Map operations.
@@ -15,15 +15,12 @@ import java.util.List;
  */
 public class CompositeWritable implements WritableComparable<CompositeWritable> {
 
-    private List<SchemaItem> schemaItems;
+    private static final char ASCENDING = 'A';
+    private static final char DESCENDING = 'D';
+
+    private char[] ordering;
 
     private Comparable[] objects;
-
-    public void setSchemaItems(List<SchemaItem> schemaItems) {
-        this.schemaItems = schemaItems;
-        if (objects == null || objects.length < schemaItems.size())
-            objects = new Comparable[schemaItems.size() * 2];
-    }
 
     public void setObject(int index, Comparable object) {
         objects[index] = object;
@@ -33,16 +30,49 @@ public class CompositeWritable implements WritableComparable<CompositeWritable> 
         return objects[index];
     }
 
+    public void setObjectOrderBy(int index, char order) {
+        this.ordering[index] = order;
+    }
+
+    public void setObjectOrderBy(int index, ViewMetaData.OrderByItem.OrderType order) {
+        if (order == ViewMetaData.OrderByItem.OrderType.ASCENDING)
+            setObjectOrderBy(index, ASCENDING);
+        else if (order == ViewMetaData.OrderByItem.OrderType.DESCENDING)
+            setObjectOrderBy(index, DESCENDING);
+    }
+
+    public ViewMetaData.OrderByItem.OrderType getObjectOrderBy(int index) {
+        char order = this.ordering[index];
+        if (order == ASCENDING)
+            return ViewMetaData.OrderByItem.OrderType.ASCENDING;
+        else if (order == DESCENDING)
+            return ViewMetaData.OrderByItem.OrderType.DESCENDING;
+        return null;
+    }
+
+    public CompositeWritable() {
+    }
+
+    public CompositeWritable(int size) {
+        resize(size);
+    }
+
+    /**
+     * Call this before write, or use the corresponding constructor. But if you read, it's not necessary.
+     * @param size the size of the value set.
+     */
+    public void resize(int size) {
+        this.objects = new Comparable[size];
+        this.ordering = new char[size];
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public int compareTo(CompositeWritable that) {
 
         int compareToResult = 0;
-        int size = schemaItems.size();
-        assert (size == that.schemaItems.size());
 
-        for (int i = 0; i < size; ++i) {
-
-            assert(this.schemaItems.get(i).isAscending() == that.schemaItems.get(i).isAscending());
+        for (int i = 0; i < objects.length; ++i) {
 
             if (this.objects[i] == null) {
                 if (that.objects[i] == null) {
@@ -57,7 +87,7 @@ public class CompositeWritable implements WritableComparable<CompositeWritable> 
             }
 
             if (compareToResult != 0) {
-                if (!this.schemaItems.get(i).isAscending())
+                if (this.ordering[i] == DESCENDING)
                     compareToResult = -compareToResult;
                 break;
             }
@@ -68,30 +98,31 @@ public class CompositeWritable implements WritableComparable<CompositeWritable> 
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
-        for (int i = 0; i < schemaItems.size(); ++i) {
-            SchemaItem schemaItem = schemaItems.get(i);
-            Class itemType = schemaItem.getType();
+        dataOutput.writeUTF(new String(ordering));
+        for (Comparable object : objects) {
+            Class itemType = object.getClass();
+            dataOutput.writeChar(typeToChar(itemType));
             if (itemType.equals(Integer.class))
-                dataOutput.writeInt((Integer) objects[i]);
+                dataOutput.writeInt((Integer) object);
             else if (itemType.equals(Long.class))
-                dataOutput.writeLong((Long) objects[i]);
+                dataOutput.writeLong((Long) object);
             else if (itemType.equals(String.class))
-                dataOutput.writeUTF((String) objects[i]);
+                dataOutput.writeUTF((String) object);
             else if (itemType.equals(Double.class))
-                dataOutput.writeDouble((Double) objects[i]);
+                dataOutput.writeDouble((Double) object);
             else if (itemType.equals(Float.class))
-                dataOutput.writeFloat((Float) objects[i]);
+                dataOutput.writeFloat((Float) object);
             else
-                assert(false);
+                throw new IOException(String.format("Type unsupported: %s", itemType));
             // TODO Other types.
         }
     }
 
     @Override
     public void readFields(DataInput dataInput) throws IOException {
-        for (int i = 0; i < schemaItems.size(); ++i) {
-            SchemaItem schemaItem = schemaItems.get(i);
-            Class itemType = schemaItem.getType();
+        this.ordering = dataInput.readUTF().toCharArray();
+        for (int i = 0; i < ordering.length; ++i) {
+            Class itemType = charToType(ordering[i]);
             if (itemType.equals(Integer.class))
                 objects[i] = dataInput.readInt();
             else if (itemType.equals(Long.class))
@@ -103,28 +134,28 @@ public class CompositeWritable implements WritableComparable<CompositeWritable> 
             else if (itemType.equals(Float.class))
                 objects[i] = dataInput.readFloat();
             else
-                assert(false);
+                throw new IOException(String.format("Type unsupported: %s", itemType));
             // TODO Other types.
         }
     }
 
-    public static class SchemaItem {
-
-        private Class type;
-
-        private boolean ascending;
-
-        public SchemaItem(Class type, boolean ascending) {
-            this.type = type;
-            this.ascending = ascending;
+    private static Class charToType(char c) {
+        switch (c) {
+            case 'i': return Integer.class;
+            case 'l': return Long.class;
+            case 't': return String.class;
+            case 'd': return Double.class;
+            case 'f': return Float.class;
         }
+        return null;
+    }
 
-        public Class getType() {
-            return type;
-        }
-
-        public boolean isAscending() {
-            return ascending;
-        }
+    private static char typeToChar(Class type) {
+        if (type.equals(Integer.class)) return 'i';
+        if (type.equals(Long.class)) return 'l';
+        if (type.equals(String.class)) return 't';
+        if (type.equals(Double.class)) return 'd';
+        if (type.equals(Float.class)) return 'f';
+        return ' ';
     }
 }

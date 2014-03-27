@@ -153,12 +153,28 @@ public class ViewMetaData extends MetaData {
      */
     public static class OrderByItem {
 
-        private ViewMetaDataColumn column;
+        private String columnName;
 
         private OrderType type;
 
-        public OrderByItem(ViewMetaDataColumn column, OrderType type) {
-            this.column = column;
+        public OrderByItem(String columnName, OrderType type) {
+            this.columnName = columnName;
+            this.type = type;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public void setColumnName(String columnName) {
+            this.columnName = columnName;
+        }
+
+        public OrderType getOrderType() {
+            return type;
+        }
+
+        public void setType(OrderType type) {
             this.type = type;
         }
 

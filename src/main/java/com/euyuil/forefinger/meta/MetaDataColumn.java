@@ -1,9 +1,7 @@
 package com.euyuil.forefinger.meta;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
-import com.thoughtworks.xstream.converters.SingleValueConverter;
 
 /**
  * @author Liu Yue
@@ -20,9 +18,9 @@ public abstract class MetaDataColumn implements Expression {
     }
 
     /**
-     * Constructs a MetaDataColumn object specifying MetaData object and type.
+     * Constructs a MetaDataColumn object specifying MetaData object and column name.
      * @param metaData the MetaData object.
-     * @param type the type.
+     * @param name the column name.
      */
     public MetaDataColumn(MetaData metaData, String name) {
         this.metaData = metaData;
