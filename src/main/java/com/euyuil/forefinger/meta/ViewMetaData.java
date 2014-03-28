@@ -133,14 +133,14 @@ public class ViewMetaData extends MetaData {
      * Joints. Used in data joining.
      */
     @XStreamImplicit(itemFieldName = "joint")
-    private ArrayList<ViewMetaDataColumn> joints;
+    private ArrayList<JointItem> jointItems;
 
-    public List<ViewMetaDataColumn> getJoints() {
-        return Collections.unmodifiableList(joints);
+    public List<JointItem> getJointItems() {
+        return Collections.unmodifiableList(jointItems);
     }
 
-    public void setJoints(ArrayList<ViewMetaDataColumn> joints) {
-        this.joints = joints;
+    public void setJointItems(ArrayList<JointItem> jointItems) {
+        this.jointItems = jointItems;
         // TODO Save.
     }
 
@@ -188,13 +188,24 @@ public class ViewMetaData extends MetaData {
      * The meaning of the key of the intermediate result between a Map and Reduce job.
      */
     public static enum KeyUsage {
-        SIMPLE,
-        ORDER,
-        AGGREGATE,
-        INNER_JOIN,
-        LEFT_OUTER_JOIN,
-        RIGHT_OUTER_JOIN,
-        FULL_OUTER_JOIN
+        SIMPLE,    // Key is null
+        ORDER,     // Key is for ordering
+        IDENTIFY,  // Key is for identifying the table
+        JOIN,      // Key is for joining
+        AGGREGATE, // Key is for aggregating
+    }
+
+    public static class JointItem {
+
+        public static enum JointType {
+            INNER, OUTER
+        }
+
+        private String dataName;
+
+        private String columnName;
+
+        private JointType jointType;
     }
 
     @XStreamOmitField
