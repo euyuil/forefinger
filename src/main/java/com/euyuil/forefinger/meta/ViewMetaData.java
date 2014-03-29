@@ -144,6 +144,19 @@ public class ViewMetaData extends MetaData {
         // TODO Save.
     }
 
+    /**
+     * Join type for each source data, inner or outer.
+     */
+    private ArrayList<JoinType> joinTypes;
+
+    public List<JoinType> getJoinTypes() {
+        return Collections.unmodifiableList(joinTypes);
+    }
+
+    public void setJoinTypes(ArrayList<JoinType> joinTypes) {
+        this.joinTypes = joinTypes;
+    }
+
     public boolean isTemporary() {
         return false; // TODO
     }
@@ -190,22 +203,20 @@ public class ViewMetaData extends MetaData {
     public static enum KeyUsage {
         SIMPLE,    // Key is null
         ORDER,     // Key is for ordering
-        IDENTIFY,  // Key is for identifying the table
+        IDENTITY,  // Key is for identifying the table, by an identity
         JOIN,      // Key is for joining
         AGGREGATE, // Key is for aggregating
     }
 
-    public static class JointItem {
+    public static enum JoinType {
+        INNER, OUTER
+    }
 
-        public static enum JointType {
-            INNER, OUTER
-        }
+    public static class JointItem {
 
         private String dataName;
 
         private String columnName;
-
-        private JointType jointType;
     }
 
     @XStreamOmitField
