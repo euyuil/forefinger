@@ -7,7 +7,12 @@ import java.io.IOException;
 
 /**
  * Has a Mapper class and maps Maps (offset, line) to (identity, line).
+ * Doesn't have Reducer class. Thus an identity key for each line would be in the output.
  * Identity is a value that can identify the table.
+ *
+ * Input view could be a ViewMetaData.
+ *
+ * TODO Maybe projection and condition could be applied.
  *
  * @author Liu Yue
  * @version 0.0.2014.03.29

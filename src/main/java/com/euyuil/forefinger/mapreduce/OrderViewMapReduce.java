@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
+import com.euyuil.forefinger.meta.OrderViewMetaData;
 import com.euyuil.forefinger.meta.ViewMetaData;
 import com.euyuil.forefinger.meta.ViewMetaDataColumn;
 import com.euyuil.forefinger.serde.ArrayDataRow;
@@ -19,7 +20,7 @@ public class OrderViewMapReduce {
 
     public static class ViewMapper extends ViewMapReduce.ViewMapper<LongWritable, Text, CompositeWritable, Text> {
 
-        private List<ViewMetaData.OrderByItem> orderByItems;
+        private List<OrderViewMetaData.OrderByItem> orderByItems;
         private int[] orderByColumnIndices;
         private CompositeWritable compositeWritable;
 
@@ -33,7 +34,7 @@ public class OrderViewMapReduce {
                 throw new IOException("OrderByItems are not set");
             orderByColumnIndices = new int[orderByItems.size()];
             for (int i = 0; i < orderByItems.size(); i++) {
-                ViewMetaData.OrderByItem orderByItem = orderByItems.get(i);
+                OrderViewMetaData.OrderByItem orderByItem = orderByItems.get(i);
                 orderByColumnIndices[i] = viewMetaData.getMetaDataColumnIndex(orderByItem.getColumnName());
             }
             compositeWritable = new CompositeWritable(orderByColumnIndices.length);

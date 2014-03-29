@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
-import com.euyuil.forefinger.meta.ViewMetaData;
+import com.euyuil.forefinger.meta.OrderViewMetaData;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
@@ -34,19 +34,19 @@ public class CompositeWritable implements WritableComparable<CompositeWritable> 
         this.ordering[index] = order;
     }
 
-    public void setObjectOrderBy(int index, ViewMetaData.OrderByItem.OrderType order) {
-        if (order == ViewMetaData.OrderByItem.OrderType.ASCENDING)
+    public void setObjectOrderBy(int index, OrderViewMetaData.OrderByItem.OrderType order) {
+        if (order == OrderViewMetaData.OrderByItem.OrderType.ASCENDING)
             setObjectOrderBy(index, ASCENDING);
-        else if (order == ViewMetaData.OrderByItem.OrderType.DESCENDING)
+        else if (order == OrderViewMetaData.OrderByItem.OrderType.DESCENDING)
             setObjectOrderBy(index, DESCENDING);
     }
 
-    public ViewMetaData.OrderByItem.OrderType getObjectOrderBy(int index) {
+    public OrderViewMetaData.OrderByItem.OrderType getObjectOrderBy(int index) {
         char order = this.ordering[index];
         if (order == ASCENDING)
-            return ViewMetaData.OrderByItem.OrderType.ASCENDING;
+            return OrderViewMetaData.OrderByItem.OrderType.ASCENDING;
         else if (order == DESCENDING)
-            return ViewMetaData.OrderByItem.OrderType.DESCENDING;
+            return OrderViewMetaData.OrderByItem.OrderType.DESCENDING;
         return null;
     }
 

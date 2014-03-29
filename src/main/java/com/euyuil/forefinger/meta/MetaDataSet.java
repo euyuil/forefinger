@@ -135,9 +135,9 @@ public class MetaDataSet {
         String metaDataType = metaDataString.substring(1, metaDataString.indexOf(' '));
 
         XStream xmlSerDe;
-        if (metaDataType.equalsIgnoreCase("table"))
+        if (metaDataType.toLowerCase().endsWith("table"))
             xmlSerDe = TableMetaData.getXmlSerDe();
-        else if (metaDataType.equalsIgnoreCase("view"))
+        else if (metaDataType.toLowerCase().endsWith("view"))
             xmlSerDe = ViewMetaData.getXmlSerDe();
         else
             return null;
@@ -160,7 +160,7 @@ public class MetaDataSet {
     @SuppressWarnings("unchecked")
     public <T extends MetaData> T getMetaData(String dataName, Class<T> clazz, boolean useCache) {
         MetaData metaData = getMetaData(dataName, useCache);
-        if (metaData.getClass().equals(clazz))
+        if (clazz.isInstance(metaData))
             return (T) metaData;
         return null;
     }

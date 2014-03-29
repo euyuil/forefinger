@@ -11,6 +11,10 @@ import org.apache.hadoop.io.Text;
 import java.io.IOException;
 
 /**
+ * Just project something with some filter.
+ *
+ * Input view could be a very SimpleViewMetaData.
+ *
  * @author Liu Yue
  * @version 0.0.2014.03.27
  */
