@@ -1,6 +1,7 @@
 package com.euyuil.forefinger.meta;
 
 import com.euyuil.forefinger.ForefingerConfig;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.thoughtworks.xstream.XStream;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;

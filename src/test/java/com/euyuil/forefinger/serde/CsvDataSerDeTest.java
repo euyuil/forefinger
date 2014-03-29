@@ -4,7 +4,7 @@ import com.euyuil.forefinger.Environment;
 import com.euyuil.forefinger.ForefingerConfig;
 import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.meta.TableMetaData;
-import com.euyuil.forefinger.meta.ViewMetaData;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

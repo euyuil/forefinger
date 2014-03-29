@@ -2,7 +2,7 @@ package com.euyuil.forefinger;
 
 import com.euyuil.forefinger.meta.*;
 import com.euyuil.forefinger.meta.condition.Condition;
-import com.euyuil.forefinger.meta.ViewMetaData;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
 import org.apache.hadoop.mapred.jobcontrol.Job;
 
 import java.util.*;

@@ -3,6 +3,8 @@ package com.euyuil.forefinger.example;
 import com.euyuil.forefinger.mapreduce.SimpleViewMapReduce;
 import com.euyuil.forefinger.mapreduce.ViewMapReduce;
 import com.euyuil.forefinger.meta.*;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
+import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;

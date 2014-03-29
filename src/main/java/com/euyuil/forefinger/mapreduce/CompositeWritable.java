@@ -1,6 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
-import com.euyuil.forefinger.meta.OrderViewMetaData;
+import com.euyuil.forefinger.meta.view.OrderViewMetaData;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;

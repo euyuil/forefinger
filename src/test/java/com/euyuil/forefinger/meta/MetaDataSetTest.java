@@ -2,6 +2,8 @@ package com.euyuil.forefinger.meta;
 
 import com.euyuil.forefinger.Environment;
 import com.euyuil.forefinger.ForefingerConfig;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
+import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

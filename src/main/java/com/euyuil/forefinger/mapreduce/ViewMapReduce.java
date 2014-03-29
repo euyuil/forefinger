@@ -3,7 +3,7 @@ package com.euyuil.forefinger.mapreduce;
 import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.MetaDataColumn;
 import com.euyuil.forefinger.meta.MetaDataSet;
-import com.euyuil.forefinger.meta.ViewMetaData;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.condition.Condition;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.euyuil.forefinger.serde.Serializer;

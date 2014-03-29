@@ -1,5 +1,7 @@
-package com.euyuil.forefinger.meta;
+package com.euyuil.forefinger.meta.view;
 
+import com.euyuil.forefinger.meta.MetaData;
+import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -12,22 +14,8 @@ import java.util.List;
  * @author Liu Yue
  * @version 0.0.2014.03.29
  */
-public class SimpleViewMetaData extends ViewMetaData {
+public class AggregateViewMetaData extends ViewMetaData {
 
-    /**
-     * OrderBy items.
-     */
-    @XStreamImplicit(itemFieldName = "orderBy")
-    private ArrayList<OrderViewMetaData.OrderByItem> orderByItems; // TODO
-    /**
-     * Joints. Used in data joining.
-     */
-    @XStreamImplicit(itemFieldName = "joint")
-    private ArrayList<JoinViewMetaData.JointItem> jointItems;
-    /**
-     * Join type for each source data, inner or outer.
-     */
-    private ArrayList<JoinViewMetaData.JoinType> joinTypes;
     /**
      * GroupBy columns. Should NOT set them again in the standard column property.
      */
@@ -44,37 +32,11 @@ public class SimpleViewMetaData extends ViewMetaData {
     private ArrayList<MetaData> sourcesCache;
 
     /**
-     * Constructs a SimpleViewMetaData object specifying MetaDataSet object.
+     * Constructs a AggregateViewMetaData object specifying MetaDataSet object.
      * @param metaDataSet the MetaDataSet object.
      */
-    public SimpleViewMetaData(MetaDataSet metaDataSet) {
+    public AggregateViewMetaData(MetaDataSet metaDataSet) {
         super(metaDataSet);
-    }
-
-    public List<OrderViewMetaData.OrderByItem> getOrderByItems() {
-        return Collections.unmodifiableList(orderByItems);
-    }
-
-    public void setOrderByItems(ArrayList<OrderViewMetaData.OrderByItem> orderByItems) {
-        this.orderByItems = orderByItems;
-        // TODO Save.
-    }
-
-    public List<JoinViewMetaData.JointItem> getJointItems() {
-        return Collections.unmodifiableList(jointItems);
-    }
-
-    public void setJointItems(ArrayList<JoinViewMetaData.JointItem> jointItems) {
-        this.jointItems = jointItems;
-        // TODO Save.
-    }
-
-    public List<JoinViewMetaData.JoinType> getJoinTypes() {
-        return Collections.unmodifiableList(joinTypes);
-    }
-
-    public void setJoinTypes(ArrayList<JoinViewMetaData.JoinType> joinTypes) {
-        this.joinTypes = joinTypes;
     }
 
     public List<ViewMetaDataColumn> getGroupByColumns() {

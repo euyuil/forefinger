@@ -1,7 +1,7 @@
 package com.euyuil.forefinger.mapreduce;
 
-import com.euyuil.forefinger.meta.ViewMetaData;
-import com.euyuil.forefinger.meta.ViewMetaDataColumn;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
+import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import com.euyuil.forefinger.serde.ArrayDataRow;
 import com.euyuil.forefinger.serde.DataRow;
 import org.apache.hadoop.io.LongWritable;

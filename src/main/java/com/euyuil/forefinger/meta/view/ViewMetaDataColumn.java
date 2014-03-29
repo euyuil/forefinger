@@ -1,5 +1,7 @@
-package com.euyuil.forefinger.meta;
+package com.euyuil.forefinger.meta.view;
 
+import com.euyuil.forefinger.meta.MetaData;
+import com.euyuil.forefinger.meta.MetaDataColumn;
 import com.euyuil.forefinger.meta.function.Function;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
