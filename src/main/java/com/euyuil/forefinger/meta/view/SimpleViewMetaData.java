@@ -25,7 +25,7 @@ public class SimpleViewMetaData extends ViewMetaData {
      * Joints. Used in data joining.
      */
     @XStreamImplicit(itemFieldName = "joint")
-    private ArrayList<JoinViewMetaData.JointItem> jointItems;
+    private ArrayList<JoinViewMetaData.JoinItem> joinItems;
     /**
      * Join type for each source data, inner or outer.
      */
@@ -62,12 +62,12 @@ public class SimpleViewMetaData extends ViewMetaData {
         // TODO Save.
     }
 
-    public List<JoinViewMetaData.JointItem> getJointItems() {
-        return Collections.unmodifiableList(jointItems);
+    public List<JoinViewMetaData.JoinItem> getJoinItems() {
+        return Collections.unmodifiableList(joinItems);
     }
 
-    public void setJointItems(ArrayList<JoinViewMetaData.JointItem> jointItems) {
-        this.jointItems = jointItems;
+    public void setJoinItems(ArrayList<JoinViewMetaData.JoinItem> joinItems) {
+        this.joinItems = joinItems;
         // TODO Save.
     }
 
@@ -120,6 +120,6 @@ public class SimpleViewMetaData extends ViewMetaData {
         MetaData source = getSource();
         if (source != null && source.getDeserializer() != null)
             return source.getDeserializer();
-        return ensureCsvDataSerDe();
+        return super.getDeserializer();
     }
 }

@@ -1,10 +1,9 @@
 package com.euyuil.forefinger.mapreduce;
 
-import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.MetaDataColumn;
 import com.euyuil.forefinger.meta.MetaDataSet;
-import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.condition.Condition;
+import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.euyuil.forefinger.serde.Serializer;
 import org.apache.hadoop.io.Text;
@@ -28,13 +27,8 @@ public abstract class ViewMapReduce {
             extends Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
         protected Text text = new Text();
-        protected CompositeWritable compositeWritable;
-
-        protected MetaData viewMetaDataSource;
-        protected List<MetaDataColumn> viewMetaDataSourceColumns;
 
         protected ViewMetaData viewMetaData;
-        protected ViewMetaData.KeyUsage viewMetaDataKeyUsage;
         protected Serializer viewMetaDataSerializer;
         protected Deserializer viewMetaDataDeserializer;
         protected Condition viewMetaDataCondition;
@@ -47,10 +41,6 @@ public abstract class ViewMapReduce {
             String viewName = context.getConfiguration().get(PARAM_VIEW_NAME);
             viewMetaData = MetaDataSet.getDefault().getMetaData(viewName, ViewMetaData.class);
 
-            viewMetaDataSource = viewMetaData.getSource();
-            viewMetaDataSourceColumns = viewMetaDataSource.getMetaDataColumns();
-
-            viewMetaDataKeyUsage = viewMetaData.getKeyUsage();
             viewMetaDataSerializer = viewMetaData.getSerializer();
             viewMetaDataDeserializer = viewMetaData.getDeserializer();
             viewMetaDataCondition = viewMetaData.getCondition();
@@ -67,13 +57,8 @@ public abstract class ViewMapReduce {
             extends Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
         protected Text text = new Text();
-        protected CompositeWritable compositeWritable;
-
-        protected MetaData viewMetaDataSource;
-        protected List<MetaDataColumn> viewMetaDataSourceColumns;
 
         protected ViewMetaData viewMetaData;
-        protected ViewMetaData.KeyUsage viewMetaDataKeyUsage;
         protected Serializer viewMetaDataSerializer;
         protected Deserializer viewMetaDataDeserializer;
         protected Condition viewMetaDataCondition;
@@ -86,10 +71,6 @@ public abstract class ViewMapReduce {
             String viewName = context.getConfiguration().get(PARAM_VIEW_NAME);
             viewMetaData = MetaDataSet.getDefault().getMetaData(viewName, ViewMetaData.class);
 
-            viewMetaDataSource = viewMetaData.getSource();
-            viewMetaDataSourceColumns = viewMetaDataSource.getMetaDataColumns();
-
-            viewMetaDataKeyUsage = viewMetaData.getKeyUsage();
             viewMetaDataSerializer = viewMetaData.getSerializer();
             viewMetaDataDeserializer = viewMetaData.getDeserializer();
             viewMetaDataCondition = viewMetaData.getCondition();

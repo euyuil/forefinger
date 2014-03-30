@@ -76,9 +76,9 @@ public class ViewMetaData extends MetaData {
         return getXmlSerDe();
     }
 
-    static XStream xmlSerDe;
+    private static XStream xmlSerDe;
 
-    static XStream getXmlSerDe() {
+    public static XStream getXmlSerDe() {
         if (xmlSerDe == null) {
             xmlSerDe = new XStream();
             xmlSerDe.processAnnotations(new Class[]{

@@ -1,10 +1,8 @@
 package com.euyuil.forefinger.meta.view;
 
-import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.serde.Deserializer;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,26 +17,16 @@ public class JoinViewMetaData extends ViewMetaData {
     /**
      * Joints. Used in data joining.
      */
-    @XStreamImplicit(itemFieldName = "joint")
-    private ArrayList<JointItem> jointItems;
-    /**
-     * Join type for each source data, inner or outer.
-     */
-    private ArrayList<JoinType> joinTypes;
-    /**
-     * GroupBy columns. Should NOT set them again in the standard column property.
-     */
-    @XStreamImplicit(itemFieldName = "groupBy")
-    private ArrayList<ViewMetaDataColumn> groupByColumns; // TODO
+    @XStreamImplicit(itemFieldName = "join")
+    private ArrayList<JoinItem> joinItems;
+
     /**
      * The name of the referenced data, could be name of a table or view.
      * A view could have multiple sources, but they should have the same schema.
      * TODO Check if the schemas are the same.
      */
-    @XStreamImplicit(itemFieldName = "from")
-    private ArrayList<String> sources;
-    @XStreamOmitField
-    private ArrayList<MetaData> sourcesCache;
+    @XStreamImplicit(itemFieldName = "joinFrom")
+    private ArrayList<JoinSource> sources;
 
     /**
      * Constructs a JoinViewMetaData object specifying MetaDataSet object.
@@ -48,75 +36,80 @@ public class JoinViewMetaData extends ViewMetaData {
         super(metaDataSet);
     }
 
-    public List<JointItem> getJointItems() {
-        return Collections.unmodifiableList(jointItems);
+    public List<JoinItem> getJoinItems() {
+        return Collections.unmodifiableList(joinItems);
     }
 
-    public void setJointItems(ArrayList<JointItem> jointItems) {
-        this.jointItems = jointItems;
+    public void setJoinItems(ArrayList<JoinItem> joinItems) {
+        this.joinItems = joinItems;
         // TODO Save.
     }
 
-    public List<JoinType> getJoinTypes() {
-        return Collections.unmodifiableList(joinTypes);
+    public List<JoinSource> getSources() {
+        return Collections.unmodifiableList(sources);
     }
 
-    public void setJoinTypes(ArrayList<JoinType> joinTypes) {
-        this.joinTypes = joinTypes;
-    }
-
-    public List<ViewMetaDataColumn> getGroupByColumns() {
-        return Collections.unmodifiableList(groupByColumns);
-    }
-
-    public void setGroupByColumns(ArrayList<ViewMetaDataColumn> groupByColumns) {
-        this.groupByColumns = groupByColumns;
-        // TODO Save.
-    }
-
-    public List<MetaData> getSources() {
-        if (sources != null && sourcesCache == null)
-            invalidateSourcesCache();
-        return sourcesCache;
-    }
-
-    public MetaData getSource() {
-        return getSources().get(0);
-    }
-
-    public void setSources(List<MetaData> sources) {
-        // This should not be deep copy, but shallow copy. It's desired behavior.
-        sourcesCache = new ArrayList<MetaData>(sources);
-        this.sources = new ArrayList<String>(sources.size());
-        for (MetaData source : sourcesCache)
-            this.sources.add(source.getName());
-        // TODO Some invalidation job.
-    }
-
-    private void invalidateSourcesCache() {
-        ArrayList<MetaData> newSourcesCache = new ArrayList<MetaData>(sources.size());
-        for (String source : sources) {
-            newSourcesCache.add(getMetaDataSet().getMetaData(source));
-        }
-        sourcesCache = newSourcesCache;
+    public void setSources(ArrayList<JoinSource> sources) {
+        this.sources = sources;
     }
 
     @Override
     public Deserializer getDeserializer() {
-        MetaData source = getSource();
-        if (source != null && source.getDeserializer() != null)
-            return source.getDeserializer();
-        return ensureCsvDataSerDe();
+        throw new UnsupportedOperationException("Use getDeserializer(identity)");
+    }
+
+    public Deserializer getDeserializer(int identity) {
+        // TODO
+        return getMetaDataSet().getMetaData(sources.get(identity).getDataName()).getDeserializer();
     }
 
     public static enum JoinType {
         INNER, OUTER
     }
 
-    public static class JointItem {
+    public static class JoinItem {
 
         private String dataName;
 
         private String columnName;
+
+        public String getDataName() {
+            return dataName;
+        }
+
+        public void setDataName(String dataName) {
+            this.dataName = dataName;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public void setColumnName(String columnName) {
+            this.columnName = columnName;
+        }
+    }
+
+    public static class JoinSource {
+
+        private String dataName;
+
+        private JoinType joinType;
+
+        public String getDataName() {
+            return dataName;
+        }
+
+        public void setDataName(String dataName) {
+            this.dataName = dataName;
+        }
+
+        public JoinType getJoinType() {
+            return joinType;
+        }
+
+        public void setJoinType(JoinType joinType) {
+            this.joinType = joinType;
+        }
     }
 }

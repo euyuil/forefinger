@@ -13,7 +13,7 @@ import java.util.List;
  * @author Liu Yue
  * @version 0.0.2014.03.29
  */
-public class SourceViewMetaData extends ViewMetaData {
+public class ViewMetaDataSimpleSource extends ViewMetaData {
 
     /**
      * The name of the referenced data, could be name of a table or view.
@@ -26,10 +26,10 @@ public class SourceViewMetaData extends ViewMetaData {
     private ArrayList<MetaData> sourcesCache;
 
     /**
-     * Constructs a SourceViewMetaData object specifying MetaDataSet object.
+     * Constructs a ViewMetaDataSimpleSource object specifying MetaDataSet object.
      * @param metaDataSet the MetaDataSet object.
      */
-    public SourceViewMetaData(MetaDataSet metaDataSet) {
+    public ViewMetaDataSimpleSource(MetaDataSet metaDataSet) {
         super(metaDataSet);
     }
 
@@ -65,6 +65,6 @@ public class SourceViewMetaData extends ViewMetaData {
         MetaData source = getSource();
         if (source != null && source.getDeserializer() != null)
             return source.getDeserializer();
-        return ensureCsvDataSerDe();
+        return super.getDeserializer();
     }
 }
