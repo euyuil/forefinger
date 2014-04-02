@@ -24,8 +24,21 @@ public class ViewMetaDataColumn extends MetaDataColumn {
         setSourceColumnName(sourceColumnName);
     }
 
+    public ViewMetaDataColumn(ViewMetaData viewMetaData, String name, String sourceDataName, String sourceColumnName) {
+        super(viewMetaData, name);
+        setSourceDataName(sourceDataName);
+        setSourceColumnName(sourceColumnName);
+    }
+
     public ViewMetaDataColumn(ViewMetaData viewMetaData, String name, String sourceColumnName, Function function) {
         super(viewMetaData, name);
+        setSourceColumnName(sourceColumnName);
+        setFunction(function);
+    }
+
+    public ViewMetaDataColumn(ViewMetaData viewMetaData, String name, String sourceDataName, String sourceColumnName, Function function) {
+        super(viewMetaData, name);
+        setSourceDataName(sourceDataName);
         setSourceColumnName(sourceColumnName);
         setFunction(function);
     }

@@ -3,6 +3,7 @@ package com.euyuil.forefinger.example;
 import com.euyuil.forefinger.mapreduce.SimpleViewMapReduce;
 import com.euyuil.forefinger.mapreduce.ViewMapReduce;
 import com.euyuil.forefinger.meta.*;
+import com.euyuil.forefinger.meta.view.JoinViewMetaData;
 import com.euyuil.forefinger.meta.view.SimpleViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
@@ -31,6 +32,7 @@ public class HelloForefinger {
     private static final String TABLE_NAME = "user";
     private static final String TABLE2_NAME = "user2";
     private static final String VIEW_NAME = "userView";
+    private static final String JOIN_VIEW_NAME = "heterogeneous";
 
     private static MetaDataSet metaDataSet;
 
@@ -72,17 +74,13 @@ public class HelloForefinger {
         )));
 
         table.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
-                new TableMetaDataColumn(table, "id", Long.class),
-                new TableMetaDataColumn(table, "name", String.class),
-                new TableMetaDataColumn(table, "age", Double.class),
-                new TableMetaDataColumn(table, "description", String.class)
+                new TableMetaDataColumn(table, "userName", String.class),
+                new TableMetaDataColumn(table, "userQuote", String.class)
         )));
 
         table.setIndices(new ArrayList<TableMetaDataIndex>(Arrays.asList(
-                new TableMetaDataIndex(TableMetaDataIndex.Type.PRIMARY, "id"),
-                new TableMetaDataIndex(TableMetaDataIndex.Type.UNIQUE, "name"),
-                new TableMetaDataIndex(TableMetaDataIndex.Type.INDEX, "age"),
-                new TableMetaDataIndex(TableMetaDataIndex.Type.FULLTEXT, "description")
+                new TableMetaDataIndex(TableMetaDataIndex.Type.UNIQUE, "userName"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.INDEX, "userQuote")
         )));
 
         return table;
@@ -101,6 +99,33 @@ public class HelloForefinger {
         view.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
                 new ViewMetaDataColumn(view, "userName", "name"),
                 new ViewMetaDataColumn(view, "userAge", "age")
+        )));
+
+        return view;
+    }
+
+    private static JoinViewMetaData createJoinView() {
+
+        JoinViewMetaData view = new JoinViewMetaData(metaDataSet);
+
+        view.setName(JOIN_VIEW_NAME);
+
+        view.setSources(new ArrayList<JoinViewMetaData.JoinSource>(Arrays.asList(
+                new JoinViewMetaData.JoinSource(TABLE_NAME, JoinViewMetaData.JoinType.OUTER),
+                new JoinViewMetaData.JoinSource(TABLE2_NAME, JoinViewMetaData.JoinType.OUTER)
+        )));
+
+        view.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
+                new ViewMetaDataColumn(view, "name", TABLE_NAME, "name"),
+                new ViewMetaDataColumn(view, "description", TABLE_NAME, "description"),
+                new ViewMetaDataColumn(view, "quote", TABLE2_NAME, "userQuote")
+        )));
+
+        view.setJoinItems(new ArrayList<JoinViewMetaData.JoinItem>(Arrays.asList(
+                new JoinViewMetaData.JoinItem(new ArrayList<JoinViewMetaData.JoinItem.Column>(Arrays.asList(
+                        new JoinViewMetaData.JoinItem.Column(TABLE_NAME, "name"),
+                        new JoinViewMetaData.JoinItem.Column(TABLE2_NAME, "userName")
+                )))
         )));
 
         return view;
@@ -130,16 +155,43 @@ public class HelloForefinger {
         }
     }
 
+    private static void insertIntoTable2() {
+
+        String rows1 = "a,alpha\ng,golf\nc,charlie";
+        String rows2 = "d,delta\nh,hotel\nf,foxtrot";
+
+        try {
+            FileSystem fileSystem = FileSystem.get(new Configuration());
+            OutputStream outputStream1 = fileSystem.create(new Path("/opt/forefinger/user2-in/part-000.txt"));
+            OutputStream outputStream2 = fileSystem.create(new Path("/opt/forefinger/user2-in/part-001.txt"));
+            PrintWriter printWriter1 = new PrintWriter(outputStream1);
+            PrintWriter printWriter2 = new PrintWriter(outputStream2);
+            printWriter1.print(rows1);
+            printWriter2.print(rows2);
+            printWriter1.flush();
+            printWriter2.flush();
+            printWriter1.close();
+            printWriter2.close();
+            outputStream1.close();
+            outputStream2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String ... args) throws Exception {
 
         metaDataSet = MetaDataSet.getDefault();
 
         System.out.println("Creating test table and view...");
         metaDataSet.putMetaData(createTable());
+        metaDataSet.putMetaData(createTable2());
         metaDataSet.putMetaData(createView());
+        metaDataSet.putMetaData(createJoinView());
 
         System.out.println("Inserting test data...");
         insertIntoTable();
+        insertIntoTable2();
 
         SimpleViewMetaData viewMetaData = metaDataSet.getMetaData(VIEW_NAME, SimpleViewMetaData.class);
         TableMetaData sourceMetaData = (TableMetaData) viewMetaData.getSource();

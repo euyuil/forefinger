@@ -70,24 +70,53 @@ public class JoinViewMetaData extends ViewMetaData {
 
     public static class JoinItem {
 
-        private String dataName;
+        @XStreamImplicit(itemFieldName = "joinItemColumn")
+        private ArrayList<Column> columns;
 
-        private String columnName;
+        public static class Column {
 
-        public String getDataName() {
-            return dataName;
+            private String dataName;
+
+            private String columnName;
+
+            public Column() {
+            }
+
+            public Column(String dataName, String columnName) {
+                this.dataName = dataName;
+                this.columnName = columnName;
+            }
+
+            public String getDataName() {
+                return dataName;
+            }
+
+            public void setDataName(String dataName) {
+                this.dataName = dataName;
+            }
+
+            public String getColumnName() {
+                return columnName;
+            }
+
+            public void setColumnName(String columnName) {
+                this.columnName = columnName;
+            }
         }
 
-        public void setDataName(String dataName) {
-            this.dataName = dataName;
+        public JoinItem() {
         }
 
-        public String getColumnName() {
-            return columnName;
+        public JoinItem(ArrayList<Column> columns) {
+            this.columns = columns;
         }
 
-        public void setColumnName(String columnName) {
-            this.columnName = columnName;
+        public List<Column> getColumns() {
+            return Collections.unmodifiableList(columns);
+        }
+
+        public void setColumns(ArrayList<Column> columns) {
+            this.columns = columns;
         }
     }
 
@@ -96,6 +125,14 @@ public class JoinViewMetaData extends ViewMetaData {
         private String dataName;
 
         private JoinType joinType;
+
+        public JoinSource() {
+        }
+
+        public JoinSource(String dataName, JoinType joinType) {
+            this.dataName = dataName;
+            this.joinType = joinType;
+        }
 
         public String getDataName() {
             return dataName;
