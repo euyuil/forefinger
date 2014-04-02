@@ -29,6 +29,7 @@ import java.util.Arrays;
 public class HelloForefinger {
 
     private static final String TABLE_NAME = "user";
+    private static final String TABLE2_NAME = "user2";
     private static final String VIEW_NAME = "userView";
 
     private static MetaDataSet metaDataSet;
@@ -41,6 +42,33 @@ public class HelloForefinger {
 
         table.setSources(new ArrayList<String>(Arrays.asList(
                 "/opt/forefinger/user-in"
+        )));
+
+        table.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
+                new TableMetaDataColumn(table, "id", Long.class),
+                new TableMetaDataColumn(table, "name", String.class),
+                new TableMetaDataColumn(table, "age", Double.class),
+                new TableMetaDataColumn(table, "description", String.class)
+        )));
+
+        table.setIndices(new ArrayList<TableMetaDataIndex>(Arrays.asList(
+                new TableMetaDataIndex(TableMetaDataIndex.Type.PRIMARY, "id"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.UNIQUE, "name"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.INDEX, "age"),
+                new TableMetaDataIndex(TableMetaDataIndex.Type.FULLTEXT, "description")
+        )));
+
+        return table;
+    }
+
+    private static TableMetaData createTable2() {
+
+        TableMetaData table = new TableMetaData(metaDataSet);
+
+        table.setName(TABLE2_NAME);
+
+        table.setSources(new ArrayList<String>(Arrays.asList(
+                "/opt/forefinger/user2-in"
         )));
 
         table.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
