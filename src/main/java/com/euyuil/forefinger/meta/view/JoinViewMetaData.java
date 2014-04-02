@@ -2,6 +2,7 @@ package com.euyuil.forefinger.meta.view;
 
 import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.serde.Deserializer;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author Liu Yue
  * @version 0.0.2014.03.29
  */
+@XStreamAlias("joinView")
 public class JoinViewMetaData extends ViewMetaData {
 
     /**
@@ -59,7 +61,6 @@ public class JoinViewMetaData extends ViewMetaData {
     }
 
     public Deserializer getDeserializer(int identity) {
-        // TODO
         return getMetaDataSet().getMetaData(sources.get(identity).getDataName()).getDeserializer();
     }
 

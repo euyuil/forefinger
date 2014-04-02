@@ -39,6 +39,11 @@ public abstract class ViewMapReduce {
             super.setup(context);
 
             String viewName = context.getConfiguration().get(PARAM_VIEW_NAME);
+            if (viewName == null || viewName.length() == 0)
+                throw new IllegalArgumentException("View name not specified");
+
+            // System.out.println(String.format("View name is %s", viewName));
+
             viewMetaData = MetaDataSet.getDefault().getMetaData(viewName, ViewMetaData.class);
 
             viewMetaDataSerializer = viewMetaData.getSerializer();

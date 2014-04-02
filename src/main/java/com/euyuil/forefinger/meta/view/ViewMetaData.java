@@ -86,6 +86,10 @@ public class ViewMetaData extends MetaData {
                     MetaDataColumn.class,
                     ViewMetaData.class,
                     ViewMetaDataColumn.class,
+                    AggregateViewMetaData.class,
+                    JoinViewMetaData.class,
+                    OrderViewMetaData.class,
+                    SimpleViewMetaData.class
             });
         }
         return xmlSerDe;

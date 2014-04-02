@@ -1,6 +1,7 @@
 package com.euyuil.forefinger.meta.view;
 
 import com.euyuil.forefinger.meta.MetaDataSet;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.util.ArrayList;
@@ -11,7 +12,8 @@ import java.util.List;
  * @author Liu Yue
  * @version 0.0.2014.03.29
  */
-public class AggregateViewMetaData extends ViewMetaDataSimpleSource {
+@XStreamAlias("aggregateView")
+public class AggregateViewMetaData extends SimpleViewMetaData {
 
     /**
      * Constructs a AggregateViewMetaData object specifying MetaDataSet object.

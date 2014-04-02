@@ -1,5 +1,7 @@
 package com.euyuil.forefinger.mapreduce;
 
+import com.euyuil.forefinger.meta.MetaData;
+import com.euyuil.forefinger.meta.view.SimpleViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import com.euyuil.forefinger.serde.ArrayDataRow;
@@ -22,11 +24,14 @@ public abstract class SimpleViewMapReduce extends ViewMapReduce {
 
     public static class ViewMapper extends ViewMapReduce.ViewMapper<LongWritable, Text, LongWritable, Text> {
 
+        protected SimpleViewMetaData simpleViewMetaData;
+
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
-            if (viewMetaDataKeyUsage != ViewMetaData.KeyUsage.SIMPLE)
-                throw new IOException("Expected simple view");
+            if (!(viewMetaData instanceof SimpleViewMetaData))
+                throw new IOException("SimpleViewMetaData expected");
+            simpleViewMetaData = (SimpleViewMetaData) viewMetaData;
         }
 
         @Override
@@ -42,7 +47,12 @@ public abstract class SimpleViewMapReduce extends ViewMapReduce {
             ArrayDataRow writeDataRow = new ArrayDataRow(viewMetaData.getMetaDataColumns().size());
             for (int columnIndex = 0; columnIndex < viewMetaDataColumns.size(); columnIndex++) {
                 ViewMetaDataColumn column = (ViewMetaDataColumn) viewMetaDataColumns.get(columnIndex);
-                int sourceColumnIndex = viewMetaDataSource.getMetaDataColumnIndex(column.getSourceColumnName());
+                // TODO Cache this in setup().
+                String sourceDataName = column.getSourceDataName();
+                if (sourceDataName == null || sourceDataName.length() == 0)
+                    sourceDataName = simpleViewMetaData.getSource().getName();
+                MetaData sourceData = viewMetaData.getMetaDataSet().getMetaData(sourceDataName);
+                int sourceColumnIndex = sourceData.getMetaDataColumnIndex(column.getSourceColumnName());
                 writeDataRow.set(columnIndex, dataRow.get(sourceColumnIndex));
             }
 
@@ -58,8 +68,8 @@ public abstract class SimpleViewMapReduce extends ViewMapReduce {
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
-            if (viewMetaDataKeyUsage != ViewMetaData.KeyUsage.SIMPLE)
-                throw new IOException("Expected simple view");
+            if (!(viewMetaData instanceof SimpleViewMetaData))
+                throw new IOException("SimpleViewMetaData expected");
         }
 
         @Override

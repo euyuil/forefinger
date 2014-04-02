@@ -77,26 +77,31 @@ public class MetaDataSet {
         }
     }
 
-    private InputStream getInputStream(String path, ForefingerConfig.ReplicationLevel replicationLevel) {
-        try {
-            if (replicationLevel == ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
-                FileSystem fileSystem = FileSystem.get(new org.apache.hadoop.conf.Configuration());
-                if (fileSystem == null)
-                    return null;
-                return fileSystem.open(new Path(path));
-            } else if (replicationLevel == ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
-                File file = new File(path);
-                if (!file.exists() || !file.isFile())
-                    return null;
-                return new FileInputStream(path);
-            }
-        } catch (IOException ioe) {
-            return null;
+    private InputStream getInputStream(String path, ForefingerConfig.ReplicationLevel replicationLevel) throws IOException {
+
+        if (replicationLevel == ForefingerConfig.ReplicationLevel.HADOOP_FILE_SYSTEM) {
+
+            FileSystem fileSystem = FileSystem.get(new Configuration());
+
+            if (fileSystem == null)
+                throw new IOException("Cannot get HDFS file system object");
+
+            return fileSystem.open(new Path(path));
+
+        } else if (replicationLevel == ForefingerConfig.ReplicationLevel.LOCAL_FILE_SYSTEM_ON_ALL_NODES) {
+
+            File file = new File(path);
+
+            if (!file.exists() || !file.isFile())
+                throw new IOException(String.format("File %s not found", path));
+
+            return new FileInputStream(path);
         }
-        return null;
+
+        throw new IOException(String.format("The replication level %s is not supported", replicationLevel));
     }
 
-    private String readAsString(String path, ForefingerConfig.ReplicationLevel replicationLevel) {
+    private String readAsString(String path, ForefingerConfig.ReplicationLevel replicationLevel) throws IOException {
         InputStream inputStream = getInputStream(path, replicationLevel);
         Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
@@ -132,7 +137,16 @@ public class MetaDataSet {
         }
 
         String metaDataPath = metaDataDir + File.separator + dataName + ".xml";
-        String metaDataString = readAsString(metaDataPath, forefingerConfig.getMetaDataReplicationLevel()).trim();
+
+        String metaDataString = null;
+
+        try {
+            metaDataString = readAsString(metaDataPath, forefingerConfig.getMetaDataReplicationLevel()).trim();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Couldn't read the meta data", e); // TODO
+        }
+
         String metaDataType = metaDataString.substring(1, metaDataString.indexOf(' '));
 
         XStream xmlSerDe;

@@ -1,5 +1,6 @@
 package com.euyuil.forefinger.mapreduce;
 
+import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.view.OrderViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
@@ -20,23 +21,30 @@ public class OrderViewMapReduce {
 
     public static class ViewMapper extends ViewMapReduce.ViewMapper<LongWritable, Text, CompositeWritable, Text> {
 
+        private OrderViewMetaData orderViewMetaData;
         private List<OrderViewMetaData.OrderByItem> orderByItems;
         private int[] orderByColumnIndices;
         private CompositeWritable compositeWritable;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
+
             super.setup(context);
-            if (viewMetaDataKeyUsage != ViewMetaData.KeyUsage.ORDER)
-                throw new IOException("Expected order view");
-            orderByItems = viewMetaData.getOrderByItems();
+
+            if (!(viewMetaData instanceof OrderViewMetaData))
+                throw new IOException("Expected OrderViewMetaData");
+            orderViewMetaData = (OrderViewMetaData) viewMetaData;
+
+            orderByItems = orderViewMetaData.getOrderByItems();
             if (orderByItems == null)
                 throw new IOException("OrderByItems are not set");
+
             orderByColumnIndices = new int[orderByItems.size()];
             for (int i = 0; i < orderByItems.size(); i++) {
                 OrderViewMetaData.OrderByItem orderByItem = orderByItems.get(i);
                 orderByColumnIndices[i] = viewMetaData.getMetaDataColumnIndex(orderByItem.getColumnName());
             }
+
             compositeWritable = new CompositeWritable(orderByColumnIndices.length);
         }
 
@@ -53,7 +61,12 @@ public class OrderViewMapReduce {
             ArrayDataRow writeDataRow = new ArrayDataRow(viewMetaData.getMetaDataColumns().size());
             for (int columnIndex = 0; columnIndex < viewMetaDataColumns.size(); columnIndex++) {
                 ViewMetaDataColumn column = (ViewMetaDataColumn) viewMetaDataColumns.get(columnIndex);
-                int sourceColumnIndex = viewMetaDataSource.getMetaDataColumnIndex(column.getSourceColumnName());
+                // TODO Cache this in setup().
+                String sourceDataName = column.getSourceDataName();
+                if (sourceDataName == null || sourceDataName.length() == 0)
+                    sourceDataName = orderViewMetaData.getSource().getName();
+                MetaData sourceData = viewMetaData.getMetaDataSet().getMetaData(sourceDataName);
+                int sourceColumnIndex = sourceData.getMetaDataColumnIndex(column.getSourceColumnName());
                 writeDataRow.set(columnIndex, dataRow.get(sourceColumnIndex));
             }
 
@@ -73,11 +86,14 @@ public class OrderViewMapReduce {
 
     public static class ViewReducer extends ViewMapReduce.ViewReducer<CompositeWritable, Text, NullWritable, Text> {
 
+        private OrderViewMetaData orderViewMetaData;
+
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
-            if (viewMetaDataKeyUsage != ViewMetaData.KeyUsage.ORDER)
-                throw new IOException("Expected order view");
+            if (!(viewMetaData instanceof OrderViewMetaData))
+                throw new IOException("Expected OrderViewMetaData");
+            orderViewMetaData = (OrderViewMetaData) viewMetaData;
         }
 
         @Override

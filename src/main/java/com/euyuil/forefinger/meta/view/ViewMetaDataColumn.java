@@ -46,6 +46,21 @@ public class ViewMetaDataColumn extends MetaDataColumn {
         // TODO Save schema or something.
     }
 
+    /**
+     * Set to null to use default value.
+     */
+    @XStreamAsAttribute
+    @XStreamAlias("data")
+    private String sourceDataName;
+
+    public String getSourceDataName() {
+        return sourceDataName;
+    }
+
+    public void setSourceDataName(String sourceDataName) {
+        this.sourceDataName = sourceDataName;
+    }
+
     @XStreamAsAttribute
     @XStreamAlias("source")
     private String sourceColumnName;
@@ -75,7 +90,7 @@ public class ViewMetaDataColumn extends MetaDataColumn {
             if (viewMetaData == null)
                 throw new NullPointerException("Cannot find ViewMetaData of ViewMetaDataColumn");
 
-            MetaData sourceMetaData = viewMetaData.getSource();
+            MetaData sourceMetaData = getMetaDataSet().getMetaData(getSourceDataName());
 
             if (sourceMetaData == null)
                 throw new NullPointerException("Cannot find sourceMetaData of ViewMetaData of ViewMetaDataColumn");

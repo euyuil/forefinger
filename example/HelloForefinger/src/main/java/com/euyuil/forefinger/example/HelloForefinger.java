@@ -3,6 +3,7 @@ package com.euyuil.forefinger.example;
 import com.euyuil.forefinger.mapreduce.SimpleViewMapReduce;
 import com.euyuil.forefinger.mapreduce.ViewMapReduce;
 import com.euyuil.forefinger.meta.*;
+import com.euyuil.forefinger.meta.view.SimpleViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import org.apache.hadoop.conf.Configuration;
@@ -61,11 +62,9 @@ public class HelloForefinger {
 
     private static ViewMetaData createView() {
 
-        ViewMetaData view = new ViewMetaData(metaDataSet);
+        SimpleViewMetaData view = new SimpleViewMetaData(metaDataSet);
 
         view.setName(VIEW_NAME);
-
-        view.setKeyUsage(ViewMetaData.KeyUsage.SIMPLE);
 
         view.setSources(new ArrayList<MetaData>(Arrays.asList(
                 metaDataSet.getMetaData(TABLE_NAME)
@@ -114,7 +113,7 @@ public class HelloForefinger {
         System.out.println("Inserting test data...");
         insertIntoTable();
 
-        ViewMetaData viewMetaData = metaDataSet.getMetaData(VIEW_NAME, ViewMetaData.class);
+        SimpleViewMetaData viewMetaData = metaDataSet.getMetaData(VIEW_NAME, SimpleViewMetaData.class);
         TableMetaData sourceMetaData = (TableMetaData) viewMetaData.getSource();
 
         System.out.println("ViewMetaData:");

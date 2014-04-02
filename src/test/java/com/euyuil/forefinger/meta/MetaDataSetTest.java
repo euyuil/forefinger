@@ -2,6 +2,7 @@ package com.euyuil.forefinger.meta;
 
 import com.euyuil.forefinger.Environment;
 import com.euyuil.forefinger.ForefingerConfig;
+import com.euyuil.forefinger.meta.view.SimpleViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import org.junit.After;
@@ -51,11 +52,9 @@ public class MetaDataSetTest {
 
     private ViewMetaData generateViewMetaData() {
 
-        ViewMetaData view = new ViewMetaData(metaDataSet);
+        SimpleViewMetaData view = new SimpleViewMetaData(metaDataSet);
 
         view.setName("userView");
-
-        view.setKeyUsage(ViewMetaData.KeyUsage.SIMPLE);
 
         view.setSources(new ArrayList<MetaData>(Arrays.asList(
                 metaDataSet.getMetaData("user")
