@@ -2,7 +2,6 @@ package com.euyuil.forefinger.mapreduce;
 
 import com.euyuil.forefinger.meta.MetaData;
 import com.euyuil.forefinger.meta.view.OrderViewMetaData;
-import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import com.euyuil.forefinger.serde.ArrayDataRow;
 import com.euyuil.forefinger.serde.DataRow;
@@ -19,12 +18,12 @@ import java.util.List;
  */
 public class OrderViewMapReduce {
 
-    public static class ViewMapper extends ViewMapReduce.ViewMapper<LongWritable, Text, CompositeWritable, Text> {
+    public static class ViewMapper extends ViewMapReduce.ViewMapper<LongWritable, Text, CompositeKeyWritable, Text> {
 
         private OrderViewMetaData orderViewMetaData;
         private List<OrderViewMetaData.OrderByItem> orderByItems;
         private int[] orderByColumnIndices;
-        private CompositeWritable compositeWritable;
+        private CompositeKeyWritable compositeKeyWritable;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
@@ -45,7 +44,7 @@ public class OrderViewMapReduce {
                 orderByColumnIndices[i] = viewMetaData.getMetaDataColumnIndex(orderByItem.getColumnName());
             }
 
-            compositeWritable = new CompositeWritable(orderByColumnIndices.length);
+            compositeKeyWritable = new CompositeKeyWritable(orderByColumnIndices.length);
         }
 
         @Override
@@ -73,18 +72,18 @@ public class OrderViewMapReduce {
             // Ordering key computation.
             for (int i = 0; i < orderByColumnIndices.length; ++i) {
                 Comparable columnValue = (Comparable) dataRow.get(orderByColumnIndices[i]);
-                compositeWritable.setObject(i, columnValue);
-                compositeWritable.setObjectOrderBy(i, orderByItems.get(i).getOrderType());
+                compositeKeyWritable.setObject(i, columnValue);
+                compositeKeyWritable.setObjectOrderBy(i, orderByItems.get(i).getOrderType());
             }
 
             // Write results.
             String serialized = viewMetaDataSerializer.serialize(writeDataRow);
             text.set(serialized);
-            context.write(compositeWritable, text);
+            context.write(compositeKeyWritable, text);
         }
     }
 
-    public static class ViewReducer extends ViewMapReduce.ViewReducer<CompositeWritable, Text, NullWritable, Text> {
+    public static class ViewReducer extends ViewMapReduce.ViewReducer<CompositeKeyWritable, Text, NullWritable, Text> {
 
         private OrderViewMetaData orderViewMetaData;
 
@@ -97,7 +96,7 @@ public class OrderViewMapReduce {
         }
 
         @Override
-        protected void reduce(CompositeWritable key, Iterable<Text> values, Context context)
+        protected void reduce(CompositeKeyWritable key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
 
             for (Text text : values) // TODO Use the serializer and deserializer.
