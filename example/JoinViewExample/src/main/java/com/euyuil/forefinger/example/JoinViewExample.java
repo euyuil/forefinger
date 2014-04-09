@@ -1,7 +1,8 @@
 package com.euyuil.forefinger.example;
 
+import com.euyuil.forefinger.mapreduce.CompositeKeyWritable;
+import com.euyuil.forefinger.mapreduce.CompositeValueWritable;
 import com.euyuil.forefinger.mapreduce.JoinViewMapReduce;
-import com.euyuil.forefinger.mapreduce.SimpleViewMapReduce;
 import com.euyuil.forefinger.mapreduce.ViewMapReduce;
 import com.euyuil.forefinger.meta.*;
 import com.euyuil.forefinger.meta.view.JoinViewMetaData;
@@ -9,7 +10,6 @@ import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -186,29 +186,55 @@ public class JoinViewExample {
             System.out.println(tableMetaData.toXml());
         System.out.println();
 
-        Configuration configuration = new Configuration();
+        Configuration reduceConf = new Configuration();
 
-        configuration.set(JoinViewMapReduce.PARAM_DATA_NAME, JOIN_VIEW_NAME);
+        reduceConf.set(JoinViewMapReduce.PARAM_DATA_NAME, JOIN_VIEW_NAME);
 
-        Job job = new Job(configuration, "testJob");
+        Job reduceJob = new Job(reduceConf, "reduceJob");
 
-        job.setJarByClass(ViewMapReduce.class);
+        reduceJob.setJarByClass(ViewMapReduce.class);
 
-        job.setMapperClass(SimpleViewMapReduce.ViewMapper.class);
-        job.setMapOutputKeyClass(LongWritable.class);
-        job.setMapOutputValueClass(Text.class);
+        reduceJob.setReducerClass(JoinViewMapReduce.JoinViewReducer.class);
+        reduceJob.setOutputKeyClass(NullWritable.class);
+        reduceJob.setOutputValueClass(Text.class);
 
-        job.setReducerClass(SimpleViewMapReduce.ViewReducer.class);
+        String reduceOutputLocation = "/opt/forefinger/joinViewTestOutput";
 
-        job.setOutputKeyClass(NullWritable.class);
-        job.setOutputValueClass(Text.class);
+        FileSystem.get(reduceConf).delete(new Path(reduceOutputLocation), true);
+        FileOutputFormat.setOutputPath(reduceJob, new Path(reduceOutputLocation));
 
-        for (String source : sourceMetaData.getSources())
-            FileInputFormat.addInputPath(job, new Path(source));
+        // Do map jobs and configure reduce job.
+        for (TableMetaData tableMetaData : tableMetaDataList) {
 
-        FileSystem.get(configuration).delete(new Path("/opt/forefinger/user-out"), true);
-        FileOutputFormat.setOutputPath(job, new Path("/opt/forefinger/user-out"));
+            Configuration mapConf = new Configuration();
 
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
+            mapConf.set(JoinViewMapReduce.PARAM_DATA_NAME, JOIN_VIEW_NAME);
+
+            Job mapJob = new Job(mapConf, "testJob");
+
+            mapJob.setJarByClass(ViewMapReduce.class);
+
+            mapJob.setMapperClass(JoinViewMapReduce.JoinViewMapper.class);
+            mapJob.setMapOutputKeyClass(CompositeKeyWritable.class);
+            mapJob.setMapOutputValueClass(CompositeValueWritable.class);
+
+            for (String source : tableMetaData.getSources())
+                FileInputFormat.addInputPath(mapJob, new Path(source));
+
+            String mapOutputLocation = String.format("/opt/forefinger/tempJoinMapOutput/%s", tableMetaData.getName());
+
+            FileInputFormat.addInputPath(reduceJob, new Path(mapOutputLocation));
+
+            FileSystem.get(mapConf).delete(new Path(mapOutputLocation), true);
+            FileOutputFormat.setOutputPath(mapJob, new Path(mapOutputLocation));
+
+            boolean mapJobSucceeded = mapJob.waitForCompletion(true);
+
+            if (!mapJobSucceeded)
+                System.exit(-1);
+        }
+
+        // Do reduce job.
+        System.exit(reduceJob.waitForCompletion(true) ? 0 : -1);
     }
 }

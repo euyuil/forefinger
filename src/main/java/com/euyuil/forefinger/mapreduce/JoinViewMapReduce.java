@@ -75,7 +75,7 @@ public class JoinViewMapReduce {
             super.setup(context);
 
             if (!(viewMetaData instanceof JoinViewMetaData))
-                throw new IOException("SimpleViewMetaData expected");
+                throw new IOException("JoinViewMetaData expected");
             joinViewMetaData = (JoinViewMetaData) viewMetaData;
 
             String sourceDataName = context.getConfiguration().get(PARAM_DATA_NAME);
