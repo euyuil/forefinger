@@ -26,6 +26,7 @@
         <module name="JoinViewExample" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="1.6" />
   </component>
 </project>
 

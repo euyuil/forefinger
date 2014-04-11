@@ -17,6 +17,13 @@ public class CompositeKeyWritableEx extends CompositeKeyWritable {
 
     private char[] ordering;
 
+    public CompositeKeyWritableEx() {
+    }
+
+    public CompositeKeyWritableEx(int size) {
+        super(size);
+    }
+
     public void setObjectOrderBy(int index, char order) {
         this.ordering[index] = order;
     }

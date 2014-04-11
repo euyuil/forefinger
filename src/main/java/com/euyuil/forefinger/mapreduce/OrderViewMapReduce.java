@@ -23,7 +23,7 @@ public class OrderViewMapReduce {
         private OrderViewMetaData orderViewMetaData;
         private List<OrderViewMetaData.OrderByItem> orderByItems;
         private int[] orderByColumnIndices;
-        private CompositeKeyWritable compositeKeyWritable;
+        private CompositeKeyWritableEx compositeKeyWritable;
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
@@ -44,7 +44,7 @@ public class OrderViewMapReduce {
                 orderByColumnIndices[i] = viewMetaData.getMetaDataColumnIndex(orderByItem.getColumnName());
             }
 
-            compositeKeyWritable = new CompositeKeyWritable(orderByColumnIndices.length);
+            compositeKeyWritable = new CompositeKeyWritableEx(orderByColumnIndices.length);
         }
 
         @Override
