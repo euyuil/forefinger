@@ -4,13 +4,16 @@ import com.euyuil.forefinger.meta.MetaDataSet;
 import com.euyuil.forefinger.meta.TableMetaData;
 import com.euyuil.forefinger.serde.DataRow;
 import com.euyuil.forefinger.serde.Deserializer;
+import com.euyuil.forefinger.utils.IndexUtils;
 import com.euyuil.forefinger.utils.JobUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ public class IndexGenerateMapReduce extends ForefingerMapReduce {
         for (String source : tableMetaData.getSources()) {
 
             Configuration conf = new Configuration();
+            FileSystem fileSystem = FileSystem.get(conf);
 
             conf.set(PARAM_TABLE_NAME, tableName);
             conf.set(PARAM_INDEX_COLUMN, columnName);
@@ -53,6 +57,10 @@ public class IndexGenerateMapReduce extends ForefingerMapReduce {
             job.setOutputValueClass(Text.class);
 
             FileInputFormat.addInputPath(job, new Path(source));
+
+            Path indexPath = IndexUtils.getIndexPath(tableName, columnName, source);
+            fileSystem.delete(indexPath, true);
+            FileOutputFormat.setOutputPath(job, indexPath);
 
             try {
                 job.submit();
@@ -87,15 +95,17 @@ public class IndexGenerateMapReduce extends ForefingerMapReduce {
             indexColumnName = context.getConfiguration().get(PARAM_INDEX_COLUMN);
             indexColumnId = getTableMetaData().getMetaDataColumnIndex(indexColumnName);
             tableRowDeserializer = getTableMetaData().getDeserializer();
+            System.out.println(String.format("Table name is %s", getTableMetaData().getName()));
+            System.out.println(String.format("Index column name is %s", indexColumnName));
+            System.out.println(String.format("Index column ID is %s", indexColumnId));
+            System.out.println(String.format("Table row deserializer is %s", tableRowDeserializer.getClass().getName()));
         }
 
         @Override
         protected void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
-
             DataRow dataRow = tableRowDeserializer.deserialize(value.toString());
-
-            text.set(dataRow.get(indexColumnId, String.class));
+            text.set(dataRow.get(indexColumnId).toString());
             context.write(text, key);
         }
     }

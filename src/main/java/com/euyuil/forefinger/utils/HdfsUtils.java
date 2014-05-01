@@ -16,18 +16,14 @@ import java.io.PrintWriter;
 public class HdfsUtils {
 
     public static void writeStringToFile(String content, Path path) throws IOException {
-        FileSystem fileSystem = FileSystem.get(new Configuration());
-        OutputStream outputStream = fileSystem.create(path);
-        PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.print(content);
-        printWriter.flush();
-        printWriter.close();
-        outputStream.close();
+        PrintWriter writer = beginWrite(path);
+        writer.println(content);
+        endWrite(writer);
     }
 
     public static PrintWriter beginWrite(Path path) throws IOException {
         FileSystem fileSystem = path.getFileSystem(new Configuration());
-        OutputStream outputStream = fileSystem.create(path);
+        OutputStream outputStream = fileSystem.create(path, true);
         return new PrintWriter(outputStream);
     }
 

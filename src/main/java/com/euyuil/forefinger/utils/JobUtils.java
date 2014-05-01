@@ -30,10 +30,13 @@ public class JobUtils {
                 Job job = iterator.next();
                 try {
                     if (job.isComplete()) {
+                        iterator.remove();
                         if (!job.isSuccessful()) {
+                            System.out.println(String.format(
+                                    "Job %s is failed, visit %s for more information",
+                                    job.getJobName(),
+                                    job.getTrackingURL()));
                             result = false;
-                        } else {
-                            iterator.remove();
                         }
                     }
                 } catch (IOException e) {

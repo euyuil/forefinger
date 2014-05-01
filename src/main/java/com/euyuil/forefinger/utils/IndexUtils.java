@@ -11,7 +11,12 @@ public class IndexUtils {
 
     private static final String INDEX_PATH_PREFIX = "/opt/forefinger/index";
 
-    public static Path getIndexPathForSource(Path sourcePath) {
-        return new Path(INDEX_PATH_PREFIX + '/' + DigestUtils.md5Hex(sourcePath.toString()));
+    public static Path getIndexPath(String tableName, String columnName, String source) {
+        return new Path(String.format(
+                "%s/%s-%s-%s",
+                INDEX_PATH_PREFIX,
+                tableName,
+                columnName,
+                DigestUtils.md5Hex(source)));
     }
 }
