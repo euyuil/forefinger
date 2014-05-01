@@ -7,6 +7,7 @@ import com.euyuil.forefinger.mapreduce.ViewMapReduce;
 import com.euyuil.forefinger.meta.*;
 import com.euyuil.forefinger.meta.view.JoinViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
+import com.euyuil.forefinger.utils.HdfsUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -17,8 +18,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -113,23 +112,13 @@ public class JoinViewExample {
 
     private static void insertIntoTable() {
 
-        String rows1 = "1,a,10,aa\n2,b,11,bb\n3,c,12,cc";
-        String rows2 = "4,d,13,dd\n5,e,14,ee\n6,f,15,ff";
-
         try {
-            FileSystem fileSystem = FileSystem.get(new Configuration());
-            OutputStream outputStream1 = fileSystem.create(new Path("/opt/forefinger/user-in/part-000.txt"));
-            OutputStream outputStream2 = fileSystem.create(new Path("/opt/forefinger/user-in/part-001.txt"));
-            PrintWriter printWriter1 = new PrintWriter(outputStream1);
-            PrintWriter printWriter2 = new PrintWriter(outputStream2);
-            printWriter1.print(rows1);
-            printWriter2.print(rows2);
-            printWriter1.flush();
-            printWriter2.flush();
-            printWriter1.close();
-            printWriter2.close();
-            outputStream1.close();
-            outputStream2.close();
+            HdfsUtils.writeStringToFile("1,a,10,aa\n2,b,11,bb\n3,c,12,cc",
+                    new Path("/opt/forefinger/user-in/part-000.txt"));
+
+            HdfsUtils.writeStringToFile("4,d,13,dd\n5,e,14,ee\n6,f,15,ff",
+                    new Path("/opt/forefinger/user-in/part-001.txt"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -137,29 +126,19 @@ public class JoinViewExample {
 
     private static void insertIntoTable2() {
 
-        String rows1 = "a,alpha\ng,golf\nc,charlie";
-        String rows2 = "d,delta\nh,hotel\nf,foxtrot";
-
         try {
-            FileSystem fileSystem = FileSystem.get(new Configuration());
-            OutputStream outputStream1 = fileSystem.create(new Path("/opt/forefinger/user2-in/part-000.txt"));
-            OutputStream outputStream2 = fileSystem.create(new Path("/opt/forefinger/user2-in/part-001.txt"));
-            PrintWriter printWriter1 = new PrintWriter(outputStream1);
-            PrintWriter printWriter2 = new PrintWriter(outputStream2);
-            printWriter1.print(rows1);
-            printWriter2.print(rows2);
-            printWriter1.flush();
-            printWriter2.flush();
-            printWriter1.close();
-            printWriter2.close();
-            outputStream1.close();
-            outputStream2.close();
+            HdfsUtils.writeStringToFile("a,alpha\ng,golf\nc,charlie",
+                    new Path("/opt/forefinger/user2-in/part-000.txt"));
+
+            HdfsUtils.writeStringToFile("d,delta\nh,hotel\nf,foxtrot",
+                    new Path("/opt/forefinger/user2-in/part-001.txt"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String ... args) throws Exception {
+    public static void main(String... args) throws Exception {
 
         metaDataSet = MetaDataSet.getDefault();
 
@@ -172,6 +151,7 @@ public class JoinViewExample {
         insertIntoTable();
         insertIntoTable2();
 
+        // Get the source tables (or views) of the join view
         JoinViewMetaData joinViewMetaData = metaDataSet.getMetaData(JOIN_VIEW_NAME, JoinViewMetaData.class);
         ArrayList<TableMetaData> tableMetaDataList = new ArrayList<TableMetaData>();
         for (JoinViewMetaData.JoinSource joinSource : joinViewMetaData.getSources())
@@ -181,16 +161,17 @@ public class JoinViewExample {
         System.out.println(joinViewMetaData.toXml());
         System.out.println();
 
-        System.out.println("TableMetaData:");
+        System.out.println("All of the TableMetaData:");
         for (TableMetaData tableMetaData : tableMetaDataList)
             System.out.println(tableMetaData.toXml());
         System.out.println();
 
+        // Reduce job, used to join the source
         Configuration reduceConf = new Configuration();
 
         reduceConf.set(JoinViewMapReduce.PARAM_DATA_NAME, JOIN_VIEW_NAME);
 
-        Job reduceJob = new Job(reduceConf, "reduceJob");
+        Job reduceJob = new Job(reduceConf, "Query the data for " + JOIN_VIEW_NAME);
 
         reduceJob.setJarByClass(ViewMapReduce.class);
 
@@ -203,14 +184,14 @@ public class JoinViewExample {
         FileSystem.get(reduceConf).delete(new Path(reduceOutputLocation), true);
         FileOutputFormat.setOutputPath(reduceJob, new Path(reduceOutputLocation));
 
-        // Do map jobs and configure reduce job.
+        // Do map jobs (to map heterogeneous data sets to standard format) and configure reduce job
         for (TableMetaData tableMetaData : tableMetaDataList) {
 
             Configuration mapConf = new Configuration();
 
             mapConf.set(JoinViewMapReduce.PARAM_DATA_NAME, JOIN_VIEW_NAME);
 
-            Job mapJob = new Job(mapConf, "testJob");
+            Job mapJob = new Job(mapConf, "Map the heterogeneous data set " + tableMetaData.getName());
 
             mapJob.setJarByClass(ViewMapReduce.class);
 
@@ -230,11 +211,13 @@ public class JoinViewExample {
 
             boolean mapJobSucceeded = mapJob.waitForCompletion(true);
 
-            if (!mapJobSucceeded)
+            if (!mapJobSucceeded) {
+                System.out.println("Failed map job for data set " + tableMetaData.getName());
                 System.exit(-1);
+            }
         }
 
-        // Do reduce job.
+        // Do reduce job
         System.exit(reduceJob.waitForCompletion(true) ? 0 : -1);
     }
 }

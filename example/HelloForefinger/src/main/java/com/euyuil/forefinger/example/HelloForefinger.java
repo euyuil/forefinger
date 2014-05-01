@@ -6,6 +6,7 @@ import com.euyuil.forefinger.meta.*;
 import com.euyuil.forefinger.meta.view.SimpleViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
+import com.euyuil.forefinger.utils.HdfsUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -102,6 +103,16 @@ public class HelloForefinger {
         }
     }
 
+    private static void insertIntoTableSingleFile() {
+        try {
+            HdfsUtils.writeStringToFile(
+                    "1,a,10,aa\n2,b,11,bb\n3,c,12,cc\n4,d,13,dd\n5,e,14,ee\n6,f,15,ff",
+                    new Path("/opt/forefinger/user-in"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String ... args) throws Exception {
 
         metaDataSet = MetaDataSet.getDefault();
@@ -111,7 +122,7 @@ public class HelloForefinger {
         metaDataSet.putMetaData(createView());
 
         System.out.println("Inserting test data...");
-        insertIntoTable();
+        insertIntoTableSingleFile();
 
         SimpleViewMetaData viewMetaData = metaDataSet.getMetaData(VIEW_NAME, SimpleViewMetaData.class);
         TableMetaData sourceMetaData = (TableMetaData) viewMetaData.getSource();
