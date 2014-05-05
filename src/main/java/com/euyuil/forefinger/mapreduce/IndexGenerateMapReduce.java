@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * Generates indices of a physical data set.
+ * Positions should be aligned to block size?
  *
  * @author Liu Yue
  * @version 0.0.2014.04.10
