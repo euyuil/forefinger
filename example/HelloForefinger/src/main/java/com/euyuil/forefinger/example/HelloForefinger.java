@@ -143,11 +143,11 @@ public class HelloForefinger {
 
         job.setJarByClass(ViewMapReduce.class);
 
-        job.setMapperClass(SimpleViewMapReduce.ViewMapper.class);
+        job.setMapperClass(SimpleViewMapReduce.SimpleViewMapper.class);
         job.setMapOutputKeyClass(LongWritable.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setReducerClass(SimpleViewMapReduce.ViewReducer.class);
+        job.setReducerClass(SimpleViewMapReduce.SimpleViewReducer.class);
 
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);

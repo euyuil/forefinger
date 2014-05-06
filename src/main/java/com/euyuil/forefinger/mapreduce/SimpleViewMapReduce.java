@@ -6,6 +6,7 @@ import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import com.euyuil.forefinger.serde.ArrayDataRow;
 import com.euyuil.forefinger.serde.DataRow;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -20,9 +21,20 @@ import java.io.IOException;
  * @author Liu Yue
  * @version 0.0.2014.03.27
  */
-public abstract class SimpleViewMapReduce extends ViewMapReduce {
+public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
 
-    public static class ViewMapper extends ViewMapReduce.ViewMapper<LongWritable, Text, LongWritable, Text> {
+    public static final String PARAM_SIMPLE_VIEW_NAME = "forefinger.simple.view.name";
+
+    public static boolean startAndWaitForSimpleViewJob(SimpleViewMetaData simpleViewMetaData) {
+        return false;
+    }
+
+    public static SimpleViewMetaData getSimpleViewMetaData(Configuration configuration) {
+        String name = configuration.get
+    }
+
+    public static class SimpleViewMapper
+            extends ForefingerMapper<LongWritable, Text, LongWritable, Text> {
 
         protected SimpleViewMetaData simpleViewMetaData;
 
@@ -63,7 +75,8 @@ public abstract class SimpleViewMapReduce extends ViewMapReduce {
         }
     }
 
-    public static class ViewReducer extends ViewMapReduce.ViewReducer<LongWritable, Text, NullWritable, Text> {
+    public static class SimpleViewReducer
+            extends ForefingerReducer<LongWritable, Text, NullWritable, Text> {
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
