@@ -1,17 +1,23 @@
 package com.euyuil.forefinger.mapreduce;
 
 import com.euyuil.forefinger.meta.MetaData;
+import com.euyuil.forefinger.meta.MetaDataColumn;
+import com.euyuil.forefinger.meta.MetaDataSet;
+import com.euyuil.forefinger.meta.condition.Condition;
 import com.euyuil.forefinger.meta.view.SimpleViewMetaData;
-import com.euyuil.forefinger.meta.view.ViewMetaData;
 import com.euyuil.forefinger.meta.view.ViewMetaDataColumn;
 import com.euyuil.forefinger.serde.ArrayDataRow;
 import com.euyuil.forefinger.serde.DataRow;
+import com.euyuil.forefinger.serde.Deserializer;
+import com.euyuil.forefinger.serde.Serializer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Just project something with some filter.
@@ -30,46 +36,64 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
     }
 
     public static SimpleViewMetaData getSimpleViewMetaData(Configuration configuration) {
-        String name = configuration.get
+        String name = configuration.get(PARAM_SIMPLE_VIEW_NAME);
+        if (name == null || name.length() == 0)
+            return null;
+        return MetaDataSet.getDefault().getMetaData(name, SimpleViewMetaData.class);
     }
 
     public static class SimpleViewMapper
             extends ForefingerMapper<LongWritable, Text, LongWritable, Text> {
 
-        protected SimpleViewMetaData simpleViewMetaData;
+        private SimpleViewMetaData simpleViewMetaData;
+
+        private Condition condition;
+
+        private Serializer serializer;
+
+        private Deserializer deserializer;
+
+        private List<MetaDataColumn> metaDataColumns;
+
+        private MetaDataSet metaDataSet;
+
+        private Text text = new Text();
 
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
-            if (!(viewMetaData instanceof SimpleViewMetaData))
-                throw new IOException("SimpleViewMetaData expected");
-            simpleViewMetaData = (SimpleViewMetaData) viewMetaData;
+            simpleViewMetaData = getSimpleViewMetaData(context.getConfiguration());
+            serializer = simpleViewMetaData.getSerializer();
+            deserializer = simpleViewMetaData.getDeserializer();
+            condition = simpleViewMetaData.getCondition();
+            metaDataColumns = Collections.unmodifiableList(simpleViewMetaData.getMetaDataColumns());
+            metaDataSet = simpleViewMetaData.getMetaDataSet();
         }
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-            DataRow dataRow = viewMetaDataDeserializer.deserialize(value.toString());
+            DataRow dataRow = deserializer.deserialize(value.toString());
 
             // Filter conditions.
-            if (viewMetaDataCondition != null && !viewMetaDataCondition.fulfilled(dataRow))
+            if (condition != null && !condition.fulfilled(dataRow))
                 return;
 
             // Projections.
-            ArrayDataRow writeDataRow = new ArrayDataRow(viewMetaData.getMetaDataColumns().size());
-            for (int columnIndex = 0; columnIndex < viewMetaDataColumns.size(); columnIndex++) {
-                ViewMetaDataColumn column = (ViewMetaDataColumn) viewMetaDataColumns.get(columnIndex);
+            ArrayDataRow writeDataRow = new ArrayDataRow(metaDataColumns.size());
+            for (int columnIndex = 0; columnIndex < metaDataColumns.size(); columnIndex++) {
+                ViewMetaDataColumn column = (ViewMetaDataColumn) metaDataColumns.get(columnIndex);
                 // TODO Cache this in setup().
                 String sourceDataName = column.getSourceDataName();
                 if (sourceDataName == null || sourceDataName.length() == 0)
                     sourceDataName = simpleViewMetaData.getSource().getName();
-                MetaData sourceData = viewMetaData.getMetaDataSet().getMetaData(sourceDataName);
+                MetaData sourceData = metaDataSet.getMetaData(sourceDataName);
                 int sourceColumnIndex = sourceData.getMetaDataColumnIndex(column.getSourceColumnName());
                 writeDataRow.set(columnIndex, dataRow.get(sourceColumnIndex));
             }
 
             // Write results.
-            String serialized = viewMetaDataSerializer.serialize(writeDataRow);
+            String serialized = serializer.serialize(writeDataRow);
             text.set(serialized);
             context.write(key, text);
         }
@@ -77,13 +101,6 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
 
     public static class SimpleViewReducer
             extends ForefingerReducer<LongWritable, Text, NullWritable, Text> {
-
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
-            super.setup(context);
-            if (!(viewMetaData instanceof SimpleViewMetaData))
-                throw new IOException("SimpleViewMetaData expected");
-        }
 
         @Override
         protected void reduce(LongWritable key, Iterable<Text> values, Context context)
