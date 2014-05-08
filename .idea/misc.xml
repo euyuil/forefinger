@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/example/JoinViewExample/pom.xml" />
         <option value="$PROJECT_DIR$/example/IndexGenerateExampe/pom.xml" />
+        <option value="$PROJECT_DIR$/example/IndexLookupExample/pom.xml" />
       </list>
     </option>
   </component>

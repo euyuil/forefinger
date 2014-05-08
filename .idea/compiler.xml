@@ -23,7 +23,8 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="HelloForefinger" />
-        <module name="IndexGenerateExampe" />
+        <module name="IndexGenerateExample" />
+        <module name="IndexLookupExample" />
         <module name="JoinViewExample" />
       </profile>
     </annotationProcessing>
