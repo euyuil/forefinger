@@ -31,8 +31,8 @@ public class IndexLookupExample {
                 "age",
                 sources.get(0),
                 "/opt/forefinger/result.txt",
-                "20",
-                "60"
+                "2000",
+                "3000"
         );
 
         if (result)

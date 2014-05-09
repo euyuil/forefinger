@@ -39,9 +39,9 @@ public class IndexGenerateExample {
 
         MetaDataSet.getDefault().putMetaData(tableMetaData);
 
-        int entryCount = 100000;
-        int startAge = 10;
-        int endAge = 100;
+        int entryCount = 10000000;
+        int startAge = 1000;
+        int endAge = 10000;
         int prefixLength = 31;
         int suffixLength = 31;
 
