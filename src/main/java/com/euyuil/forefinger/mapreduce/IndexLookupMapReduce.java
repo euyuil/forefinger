@@ -48,6 +48,10 @@ public class IndexLookupMapReduce extends ForefingerMapReduce {
 
         Configuration configuration = new Configuration();
 
+        configuration.set(PARAM_DATA_SOURCE_PATH, dataSourcePath);
+        configuration.set(PARAM_KEYWORD_BEGIN, keywordBegin);
+        configuration.set(PARAM_KEYWORD_END, keywordEnd);
+
         Job job = new Job(configuration, "IndexLookupMapReduce");
 
         job.setJarByClass(IndexLookupMapReduce.class);
@@ -64,10 +68,6 @@ public class IndexLookupMapReduce extends ForefingerMapReduce {
 
         FileSystem.get(configuration).delete(new Path(outputPath), true);
         FileOutputFormat.setOutputPath(job, new Path(outputPath));
-
-        configuration.set(PARAM_DATA_SOURCE_PATH, dataSourcePath);
-        configuration.set(PARAM_KEYWORD_BEGIN, keywordBegin);
-        configuration.set(PARAM_KEYWORD_END, keywordEnd);
 
         return job.waitForCompletion(true);
     }
@@ -106,6 +106,8 @@ public class IndexLookupMapReduce extends ForefingerMapReduce {
             int compareBegin = keyword.compareTo(keywordBegin);
             int compareEnd = keyword.compareTo(keywordEnd);
             if (compareBegin >= 0 && compareEnd < 0) {
+
+                System.out.println("Gotcha " + keyword);
 
                 // Extract all the positions.
                 String positions = line.substring(indexOfTab + 1);
