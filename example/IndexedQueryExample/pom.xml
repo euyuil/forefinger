@@ -5,19 +5,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.euyuil.forefinger</groupId>
-    <artifactId>forefinger</artifactId>
+    <groupId>com.euyuil.forefinger.example</groupId>
+    <artifactId>indexed-query-example</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>example/HelloForefinger</module>
-        <module>example/JoinViewExample</module>
-        <module>example/IndexGenerateExample</module>
-        <module>example/IndexLookupExample</module>
-        <module>example/IndexedQueryExample</module>
-    </modules>
 
     <dependencies>
 
@@ -28,9 +18,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.4.5</version>
+            <groupId>com.euyuil.forefinger</groupId>
+            <artifactId>forefinger</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

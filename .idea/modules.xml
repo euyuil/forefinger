@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/example/HelloForefinger/HelloForefinger.iml" filepath="$PROJECT_DIR$/example/HelloForefinger/HelloForefinger.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/IndexGenerateExample/IndexGenerateExample.iml" filepath="$PROJECT_DIR$/example/IndexGenerateExample/IndexGenerateExample.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/IndexLookupExample/IndexLookupExample.iml" filepath="$PROJECT_DIR$/example/IndexLookupExample/IndexLookupExample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/IndexedQueryExample/IndexedQueryExample.iml" filepath="$PROJECT_DIR$/example/IndexedQueryExample/IndexedQueryExample.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/JoinViewExample/JoinViewExample.iml" filepath="$PROJECT_DIR$/example/JoinViewExample/JoinViewExample.iml" />
     </modules>
   </component>

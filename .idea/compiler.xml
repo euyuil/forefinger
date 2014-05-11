@@ -23,6 +23,7 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="HelloForefinger" />
+        <module name="IndexedQueryExample" />
         <module name="IndexGenerateExample" />
         <module name="IndexLookupExample" />
         <module name="JoinViewExample" />
