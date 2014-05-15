@@ -38,11 +38,13 @@ public class IndexedQueryExample {
                 new ViewMetaDataColumn(simpleViewMetaData, "age", "age")
         )));
 
+        metaDataSet.putMetaData(simpleViewMetaData);
+
         boolean result = SimpleViewMapReduce.startAndWaitForSimpleViewWithIndex(
                 viewName,
                 tableMetaData.getSources().get(0),
                 "/opt/forefinger/result.txt/part-r-00000",
-                "opt/forefinger/index-result.txt");
+                "/opt/forefinger/index-result.txt");
 
         if (result)
             System.out.println("Successfully ran the job");

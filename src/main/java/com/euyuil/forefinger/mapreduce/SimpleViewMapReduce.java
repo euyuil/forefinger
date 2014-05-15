@@ -39,9 +39,9 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
 
     public static boolean startAndWaitForSimpleViewWithIndex(
             String simpleViewName,
-            String sourcePath,
-            String lookupResultPath,
-            String outputPath) throws IOException, ClassNotFoundException, InterruptedException {
+            String sourcePathStr,
+            String lookupResultPathStr,
+            String outputPathStr) throws IOException, ClassNotFoundException, InterruptedException {
 
         Configuration configuration = new Configuration();
 
@@ -62,9 +62,9 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
         job.setInputFormatClass(FileSplitInputFormat.class);
 
         FileSystem fileSystem = FileSystem.get(configuration);
-        InputStream inputStream = fileSystem.open(new Path(lookupResultPath));
+        InputStream inputStream = fileSystem.open(new Path(lookupResultPathStr));
         Scanner scanner = new Scanner(inputStream);
-        Path src = new Path(sourcePath);
+        Path src = new Path(sourcePathStr);
         long blockSize = fileSystem.getDefaultBlockSize(src);
         while (scanner.hasNext()) {
             String str = scanner.next();
@@ -74,7 +74,9 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
         scanner.close();
         inputStream.close();
 
-        TextOutputFormat.setOutputPath(job, new Path(outputPath));
+        Path outputPath = new Path(outputPathStr);
+        fileSystem.delete(outputPath, true);
+        TextOutputFormat.setOutputPath(job, outputPath);
 
         return job.waitForCompletion(true);
     }

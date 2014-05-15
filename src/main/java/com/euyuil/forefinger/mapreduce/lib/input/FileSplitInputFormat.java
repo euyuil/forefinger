@@ -63,9 +63,11 @@ public class FileSplitInputFormat extends TextInputFormat {
 
     public static FileSplitDescriptor[] getFileSplits(JobContext context) {
         String strParamInputSplit = context.getConfiguration().get(PARAM_INPUT_SPLIT);
-        String[] strInputSplits = strParamInputSplit.split("|");
+        System.out.println(strParamInputSplit);
+        String[] strInputSplits = strParamInputSplit.split("\\|");
         FileSplitDescriptor[] fileSplits = new FileSplitDescriptor[strInputSplits.length];
         for (int i = 0; i < strInputSplits.length; i++) {
+            System.out.println(strInputSplits[i]);
             String[] splits = strInputSplits[i].split(",");
             fileSplits[i] = new FileSplitDescriptor(
                     new Path(splits[0]), Integer.valueOf(splits[1]), Integer.valueOf(splits[2]));
