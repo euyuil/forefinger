@@ -70,7 +70,7 @@ public class FileSplitInputFormat extends TextInputFormat {
             System.out.println(strInputSplits[i]);
             String[] splits = strInputSplits[i].split(",");
             fileSplits[i] = new FileSplitDescriptor(
-                    new Path(splits[0]), Integer.valueOf(splits[1]), Integer.valueOf(splits[2]));
+                    new Path(splits[0]), Long.valueOf(splits[1]), Long.valueOf(splits[2]));
         }
         return fileSplits;
     }

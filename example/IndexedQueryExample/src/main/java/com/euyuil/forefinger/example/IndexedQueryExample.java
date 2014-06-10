@@ -34,21 +34,29 @@ public class IndexedQueryExample {
         ));
 
         simpleViewMetaData.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
+                new ViewMetaDataColumn(simpleViewMetaData, "id", "id"),
                 new ViewMetaDataColumn(simpleViewMetaData, "name", "name"),
                 new ViewMetaDataColumn(simpleViewMetaData, "age", "age")
         )));
 
         metaDataSet.putMetaData(simpleViewMetaData);
 
+        long beforeQuery = System.currentTimeMillis();
+
         boolean result = SimpleViewMapReduce.startAndWaitForSimpleViewWithIndex(
                 viewName,
                 tableMetaData.getSources().get(0),
                 "/opt/forefinger/result.txt/part-r-00000",
-                "/opt/forefinger/index-result.txt");
+                "/opt/forefinger/index-result.txt",
+                true);
 
         if (result)
             System.out.println("Successfully ran the job");
         else
             System.out.println("Failed");
+
+        double timeUsed = (System.currentTimeMillis() - beforeQuery) / 1000.0;
+
+        System.out.println(String.format("Time used %f", timeUsed));
     }
 }

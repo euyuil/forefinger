@@ -33,18 +33,22 @@ public class IndexGenerateExample {
         )));
 
         tableMetaData.setMetaDataColumns(new ArrayList<MetaDataColumn>(Arrays.asList(
+                new TableMetaDataColumn(tableMetaData, "id", Integer.class),
                 new TableMetaDataColumn(tableMetaData, "name", String.class),
                 new TableMetaDataColumn(tableMetaData, "age", Integer.class)
         )));
 
         MetaDataSet.getDefault().putMetaData(tableMetaData);
 
-        int entryCount = 10000000;
-        int startAge = 1000;
-        int endAge = 10000;
+        // int entryCount = 1000000; // ~ 80MB data set
+        // int entryCount = 10000000; // ~ 800MB data set
+        int entryCount = 100000000; // ~ 8GB data set
+        int startAge = 10000;
+        int endAge = 100000;
         int prefixLength = 31;
         int suffixLength = 31;
 
+        int currentId = entryCount;
         Random random = new Random();
         PrintWriter writer = HdfsUtils.beginWrite(new Path("/opt/forefinger/person.txt"));
 
@@ -56,7 +60,8 @@ public class IndexGenerateExample {
             name.append(age);
             for (int j = 0; j < suffixLength; ++j)
                 name.append((char) (random.nextInt(26) + 'a'));
-            writer.println(String.format("%s,%d", name.toString(), age));
+            writer.println(String.format("%09d,%s,%d", currentId, name.toString(), age));
+            ++currentId;
         }
 
         HdfsUtils.endWrite(writer);
@@ -64,13 +69,29 @@ public class IndexGenerateExample {
 
     public static void main(String... args) throws IOException {
 
+        long beforeCreatingTable = System.currentTimeMillis();
+
+        System.out.println("Creating example table...");
+
         createExampleTable();
 
-        boolean result = IndexGenerateMapReduce.startAndWaitForIndexGenerateJob("person", "age");
+        double createTableTime = (System.currentTimeMillis() - beforeCreatingTable) / 1000.0;
+
+        System.out.println(String.format("Example table created for %f seconds.", createTableTime));
+
+        long beforeGeneratingIndex = System.currentTimeMillis();
+
+        System.out.println("Generating index...");
+
+        boolean result = IndexGenerateMapReduce.startAndWaitForIndexGenerateJob("person", "id");
 
         if (result)
             System.out.println("Successfully generated index for column age of table person");
         else
             System.out.println("Failed generating index for column age of table person");
+
+        double generateIndexTime = (System.currentTimeMillis() - beforeGeneratingIndex) / 1000.0;
+
+        System.out.println(String.format("Index generated for %f seconds.", generateIndexTime));
     }
 }

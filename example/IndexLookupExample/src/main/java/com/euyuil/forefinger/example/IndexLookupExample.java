@@ -26,18 +26,24 @@ public class IndexLookupExample {
         for (String source : sources)
             System.out.println("\tSource: " + source);
 
+        long beforeLookupIndex = System.currentTimeMillis();
+
         boolean result = IndexLookupMapReduce.startAndWaitForIndexLookupJob(
                 tableMetaData.getName(),
-                "age",
+                "id",
                 sources.get(0),
                 "/opt/forefinger/result.txt",
-                "2000",
-                "3000"
+                "110000000",
+                "190000000"
         );
 
         if (result)
             System.out.println("Successfully done");
         else
             System.out.println("failed");
+
+        double indexLookupTime = (System.currentTimeMillis() - beforeLookupIndex) / 1000.0;
+
+        System.out.println(String.format("Time used %f", indexLookupTime));
     }
 }

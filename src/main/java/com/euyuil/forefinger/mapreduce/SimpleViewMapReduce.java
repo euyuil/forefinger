@@ -18,6 +18,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
@@ -41,7 +42,8 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
             String simpleViewName,
             String sourcePathStr,
             String lookupResultPathStr,
-            String outputPathStr) throws IOException, ClassNotFoundException, InterruptedException {
+            String outputPathStr,
+            boolean useIndex) throws IOException, ClassNotFoundException, InterruptedException {
 
         Configuration configuration = new Configuration();
 
@@ -59,20 +61,25 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
         job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
 
-        job.setInputFormatClass(FileSplitInputFormat.class);
-
         FileSystem fileSystem = FileSystem.get(configuration);
-        InputStream inputStream = fileSystem.open(new Path(lookupResultPathStr));
-        Scanner scanner = new Scanner(inputStream);
-        Path src = new Path(sourcePathStr);
-        long blockSize = fileSystem.getDefaultBlockSize(src);
-        while (scanner.hasNext()) {
-            String str = scanner.next();
-            long pos = Long.valueOf(str);
-            FileSplitInputFormat.addFileSplit(job, new FileSplitInputFormat.FileSplitDescriptor(src, pos, blockSize));
+
+        if (useIndex) {
+            job.setInputFormatClass(FileSplitInputFormat.class);
+
+            InputStream inputStream = fileSystem.open(new Path(lookupResultPathStr));
+            Scanner scanner = new Scanner(inputStream);
+            Path src = new Path(sourcePathStr);
+            long blockSize = fileSystem.getDefaultBlockSize(src);
+            while (scanner.hasNext()) {
+                String str = scanner.next();
+                long pos = Long.valueOf(str);
+                FileSplitInputFormat.addFileSplit(job, new FileSplitInputFormat.FileSplitDescriptor(src, pos, blockSize));
+            }
+            scanner.close();
+            inputStream.close();
+        } else {
+            TextInputFormat.addInputPath(job, new Path(sourcePathStr));
         }
-        scanner.close();
-        inputStream.close();
 
         Path outputPath = new Path(outputPathStr);
         fileSystem.delete(outputPath, true);
@@ -125,6 +132,11 @@ public abstract class SimpleViewMapReduce extends ForefingerMapReduce {
 
             // Filter conditions.
             if (condition != null && !condition.fulfilled(dataRow))
+                return;
+
+            // TODO Remove this work-around.
+            int id = (Integer) dataRow.get(0);
+            if (id < 110000000 || id > 190000000)
                 return;
 
             // Projections.
